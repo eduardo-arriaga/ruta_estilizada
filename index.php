@@ -135,7 +135,7 @@
                   <button  class="btn btn-light" id="zoomount" style="margin-top:5px;"><i class="fa  fa-search-minus"></i></button>  
                   <button  class="btn btn-light" id="regresar" style="margin-top:5px;">1:1</button>  
                   <button class="btn btn-light" id="puntero" style="margin-top:5px;"><i class=" fa fa-mouse-pointer"></i></button>  
-                  <button  class="btn btn-light" id="expandir" style="margin-top:5px; margin-left: 995px;"><i class="fa fa-expand"></i></button>             
+                  <button  class="btn btn-light" id="expandir" style="margin-top:5px; margin-left:680px;"><i class="fa fa-expand"></i></button>             
             </div>
      </div>
  <br><br>
