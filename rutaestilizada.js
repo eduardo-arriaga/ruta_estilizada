@@ -325,14 +325,14 @@ function initCamiones(ctx) {
 			vehiculos.listaVehiculos[z].textExtra += "\nBloqueos2: " + vehiculos.listaVehiculos[z].bloqueos2;						
 		}		
 		//Aqui ponemos los status				
-		if ((!vehiculos.listaVehiculos[z].comPuertas1) || (!vehiculos.listaVehiculos[z].comPuertas2) || ((vehiculos.listaVehiculos[z].estatus > 0) && (vehiculos.listaVehiculos[z].estatus < 4)) || (vehiculos.listaVehiculos[z].estatus == 7) || (!vehiculos.listaVehiculos[z].comEstado.comPuertas1) || (!vehiculos.listaVehiculos[z].comEstado.comPuertas2)) {			
+		if ((!vehiculos.listaVehiculos[z].comPuertas1) || (!vehiculos.listaVehiculos[z].comPuertas2) || ((vehiculos.listaVehiculos[z].estatus > 0) && (vehiculos.listaVehiculos[z].estatus < 4)) || (vehiculos.listaVehiculos[z].estatus == 7) || (vehiculos.listaVehiculos[z].comEstado.comPuertas1) || (vehiculos.listaVehiculos[z].comEstado.comPuertas2)) {			
 			countStatus++;
 			listaEstatus.push(vehiculos.listaVehiculos[z]);
 			listaMantenimiento.push(vehiculos.listaVehiculos[z]);				
-			if (!vehiculos.listaVehiculos[z].comPuertas1 || !vehiculos.listaVehiculos[z].comEstado.comPuertas1) {
+			if (!vehiculos.listaVehiculos[z].comPuertas1 || vehiculos.listaVehiculos[z].comEstado.comPuertas1) {
 				vehiculos.listaVehiculos[z].textExtra += "\nError Com. Puerta 1";
 			}
-			if (!vehiculos.listaVehiculos[z].comPuertas2 || !vehiculos.listaVehiculos[z].comEstado.comPuertas2) {
+			if (!vehiculos.listaVehiculos[z].comPuertas2 || vehiculos.listaVehiculos[z].comEstado.comPuertas2) {
 				vehiculos.listaVehiculos[z].textExtra += "\nError Com. Puerta 2";
 			}
 			if (vehiculos.listaVehiculos[z].estatus == 1) {
@@ -739,15 +739,15 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 				
 			}		
 			//Aqui ponemos los status			
-			if ((!camion.comPuertas1) || (!camion.comPuertas2) || ((camion.estatus > 0) && (camion.estatus < 4)) || (camion.estatus == 7) || (!camion.comEstado.comPuertas1) || (!camion.comEstado.comPuertas2)) {			
+			if ((!camion.comPuertas1) || (!camion.comPuertas2) || ((camion.estatus > 0) && (camion.estatus < 4)) || (camion.estatus == 7) || (camion.comEstado.comPuertas1) || (camion.comEstado.comPuertas2)) {			
 				countStatus++;
 				listaEstatus.push(camion);
 				listaMantenimiento.push(camion);				
-				if (!camion.comPuertas1 || !camion.comEstado.comPuertas1)
+				if (!camion.comPuertas1 || camion.comEstado.comPuertas1)
 				{
 					camion.textExtra += "\nError Com. Puerta 1";
 				}
-				if (!camion.comPuertas2 || !camion.comEstado.comPuertas2)
+				if (!camion.comPuertas2 || camion.comEstado.comPuertas2)
 				{
 					camion.textExtra += "\nError Com. Puerta 2";
 				}
