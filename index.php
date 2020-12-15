@@ -143,10 +143,10 @@
     <section>
 
       <div  class="d-flex justify-content-center" id='expande'>
-            <div  id='canvas1' style="position:absolute; top:280px; left:350px;">
+            <div  id='canvas1' style="position:absolute; top:280px; left:200px;">
               <canvas  id="linea1"  class="d-flex justify-content-center" width="1000" height="800">Navegador no soporta canvas :( </canvas>
             </div>
-            <div  id='canvas2' style="position:absolute; top:280px; left:350px;">
+            <div  id='canvas2' style="position:absolute; top:280px; left:200px;">
               <canvas id="linea2"  class="d-flex justify-content-center" width="1000" height="800">Navegador no soporta canvas :( </canvas>
             </div>
             <div id="iDatosBus" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
