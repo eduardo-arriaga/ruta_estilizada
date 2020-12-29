@@ -40,7 +40,7 @@
     $vis=1;
     // Obtenemos la consulta de los buses y su última posición actual
     $sql = "SELECT u.id, u.IMEI, u.Nombre, up.Latitud, up.Longitud, up.Altitud, up.Fecha, up.Direccion, up.Velocidad, up.Pasajeros, up.Acumulado, u.PasajerosCredencial, u.PasajerosMax, up.BanderaRtc, up.Estatus, " .
-           "IFNULL(e.bea, 1) bea, IFNULL(e.gps, 1) gps, IFNULL(e.sac, 1) sac, IFNULL(e.puerta1, 1) puerta1, IFNULL(e.puerta2, 1) puerta2, IFNULL(e.scom, 0) scom, IFNULL(e.fecha, '2000-01-01') FechaComunicacion, now() FechaServidor " .
+           "IFNULL(e.bea, 0) bea, IFNULL(e.gps, 0) gps, IFNULL(e.sac, 0) sac, IFNULL(e.puerta1, 0) puerta1, IFNULL(e.puerta2, 0) puerta2, IFNULL(e.scom, 0) scom, IFNULL(e.fecha, up.Fecha) FechaComunicacion, now() FechaServidor " .
            "FROM " . $nombre . ".ultimasposiciones up LEFT JOIN " . $nombre . ".usuarios u ON up.UserId = u.id LEFT JOIN " . $nombre . ".estados e ON e.vehiculo = up.UserId " . 
            //"WHERE u.RutaID = " . $id . " AND u.Nombre IN ('012') ORDER BY u.Nombre";
            "WHERE u.RutaID = " . $id . " ORDER BY u.Nombre";

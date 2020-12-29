@@ -63,7 +63,10 @@
     public $tiempo;
     public $radio;
   }
- 
+  $minX = 0;
+  $maxX = 0;
+  $minY = 0;
+  $maxY = 0;
   $nombre = filter_input(INPUT_POST, 'nombre');//obtenemos el parametro que viene de ajax
   $id = filter_input(INPUT_POST, 'id');
 
@@ -82,7 +85,7 @@
     $filas = mysqli_fetch_all($query, MYSQLI_ASSOC); 
     // Obtenemos la consulta de los buses y su última posición actual
     $sql = "SELECT u.id, u.IMEI, u.Nombre, up.Latitud, up.Longitud, up.Altitud, up.Fecha, up.Direccion, up.Velocidad, up.Pasajeros, up.Acumulado, u.PasajerosCredencial, u.PasajerosMax, up.BanderaRtc, up.Estatus, " .
-           "IFNULL(e.bea, 1) bea, IFNULL(e.gps, 1) gps, IFNULL(e.sac, 1) sac, IFNULL(e.puerta1, 1) puerta1, IFNULL(e.puerta2, 1) puerta2, IFNULL(e.scom, 0) scom, IFNULL(e.fecha, '2000-01-01') FechaComunicacion, now() FechaServidor " .
+           "IFNULL(e.bea, 0) bea, IFNULL(e.gps, 0) gps, IFNULL(e.sac, 0) sac, IFNULL(e.puerta1, 0) puerta1, IFNULL(e.puerta2, 0) puerta2, IFNULL(e.scom, 0) scom, IFNULL(e.fecha, up.Fecha) FechaComunicacion, now() FechaServidor " .
            "FROM " . $nombre . ".ultimasposiciones up LEFT JOIN " . $nombre . ".usuarios u ON up.UserId = u.id LEFT JOIN " . $nombre . ".estados e ON e.vehiculo = up.UserId " . 
            //"WHERE u.RutaID = " . $id . " AND u.Nombre  IN ('012') ORDER BY u.Nombre";
            "WHERE u.RutaID = " . $id . " ORDER BY u.Nombre";
@@ -93,6 +96,10 @@
            "FROM " . $nombre . ".encierros WHERE Ruta = " . $id . " ORDER BY ID";
     $query = mysqli_query($con, $sql); 
     $filas3 = mysqli_fetch_all($query, MYSQLI_ASSOC);      
+    // Obtenemos los datos de los max/min
+    $sql = "SELECT min(PuntoX) as minx, max(PuntoX) as maxx, min(PuntoY) as miny, max(PuntoY) as maxy from " . $nombre . ".nodos_ruta nr where RutaID = " . $id;
+    $query = mysqli_query($con, $sql); 
+    $filas4 = mysqli_fetch_all($query, MYSQLI_ASSOC);      
 
     $nodos = [];
     $tramos = [];
@@ -193,6 +200,13 @@
       $encierros[$i] = $encierro;
       $i++;
     endforeach; 
+
+    foreach($filas4 as $op): 
+      $minX = $op['minx'];
+      $maxX = $op['maxx'];
+      $minY = $op['miny'];
+      $maxY = $op['maxy'];
+    endforeach; 
    
     // Cerramos la conexión
     mysqli_close($con);  
@@ -202,6 +216,10 @@
     $data['tramos'] = $tramos;
     $data['vehiculos'] = $buses;
     $data['encierros'] = $encierros;
+    $data['minx'] = $minX;
+    $data['maxx'] = $maxX;
+    $data['miny'] = $minY;
+    $data['maxy'] = $maxY;
     echo json_encode($data);
   }
           
