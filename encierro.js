@@ -7,7 +7,7 @@ class Encierro {
 	tiempo;
     radio;
     
-    //constructor
+    //constructorprincipal
     constructor(encierro) {    
         this.id = parseInt(encierro['id']);
 		this.nombre = encierro['nombre'];
