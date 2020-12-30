@@ -8,6 +8,7 @@
       }
         require_once './con_db.php'; //libreria de conexion a la base
         $paramId = $_POST['id'];
+
         /*Abrimos la conexión a la bd*/
          $con = conDb();
             if(!$con) {
@@ -67,7 +68,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">    
    <link href="index.css" rel="stylesheet" type="text/css">
     <meta charset="ISO-8859-1">  
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.0.min.js"></script> 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-3.5.1.min.js"></script> 
     <script src="graph.js"></script>
     <script src="nodo.js"></script>
     <script src="tramo.js"></script>
@@ -98,6 +99,7 @@
       </div>
       <div  class="d-flex justify-content-center">
         <div class="row">
+          <a id="inicio" href="http://www.miruta.com.mx" class="btn btn-info" role="button" style="position:absolute; top:10px; left:800px; background-color: orange;">Inicio</a>
           <div class="col-sm text-md-right">
             <label for="grupos">Grupo:</label>
           </div>
@@ -135,19 +137,18 @@
                   <button  class="btn btn-light" id="zoomount" style="margin-top:5px;"><i class="fa  fa-search-minus"></i></button>  
                   <button  class="btn btn-light" id="regresar" style="margin-top:5px;">1:1</button>  
                   <button class="btn btn-light" id="puntero" style="margin-top:5px;"><i class=" fa fa-mouse-pointer"></i></button>  
-                  <button  class="btn btn-light" id="expandir" style="margin-top:5px; margin-left:680px;"><i class="fa fa-expand"></i></button>             
+                  <button  class="btn btn-light" id="expandir" style="margin-top:5px; margin-left: 500px;"><i class="fa fa-expand"></i></button>             
             </div>
      </div>
  <br><br>
     </header>
     <section>
-
       <div  class="d-flex justify-content-center" id='expande'>
-            <div  id='canvas1' style="position:absolute; top:280px; left:200px;">
-              <canvas  id="linea1"  class="d-flex justify-content-center" width="1000" height="800">Navegador no soporta canvas :( </canvas>
+            <div  id='canvas1' style="position:absolute; top:150px; left:10px; width:100%;" >
+              <canvas  id="linea1"  class="d-flex justify-content-center" width="100%" height="800">Navegador no soporta canvas :( </canvas>
             </div>
-            <div  id='canvas2' style="position:absolute; top:280px; left:200px;">
-              <canvas id="linea2"  class="d-flex justify-content-center" width="1000" height="800">Navegador no soporta canvas :( </canvas>
+            <div  id='canvas2' style="position:absolute; top:150px; left:10px; width:100%;">
+              <canvas id="linea2"  class="d-flex justify-content-center" width="100%" height="800">Navegador no soporta canvas :( </canvas>
             </div>
             <div id="iDatosBus" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
             </div> 
@@ -158,52 +159,51 @@
 </div>
 
 
-    <!-- Footer -->
-    <footer class="page-footer font-small blue pt-1 fixed-bottom" id="foo"  style="margin-top: 70px;">
+  
+<!-- Footer -->
+<footer class="page-footer font-small blue pt-1 fixed-bottom" id="foo"  style="margin-top: 70px;">
+    <img id="myImg" src="advertencia.gif" width="25" height="25" style="margin-top:5px; margin-left: 980px; visibility:visible">
 
-    <div class="container" id="global">
-  <div class="row row-cols-4">
-    <div class="punteado" id="global" name = "divEncierro">
-      <canvas id="Encierro" width="200" height="600">Navegador no soporta canvas :( </canvas>
-    </div>
-    <div class="punteado" id="global" name = "divFueraRuta">
-      <canvas id="FueraRuta" width="200" height="600">Navegador no soporta canvas :( </canvas>
-    </div>
-    <div class="punteado" id="global" name = "divMantenimiento">
-      <canvas id="Mantenimiento" width="200" height="600">Navegador no soporta canvas :( </canvas>
-    </div>
-    <div class="punteado" id="global" name = "divExceso">
-      <canvas id="Exceso" width="200" height="600">Navegador no soporta canvas :( </canvas>
-    </div>
-    <div class="punteado" id="global" name = "divBloqueos">
-      <canvas id="Bloqueos" width="200" height="600">Navegador no soporta canvas :( </canvas>
-    </div>    
-    <div class="punteado" id="global">
-      <canvas id="Estatus" width="200" height="600">Navegador no soporta canvas :( </canvas>
-    </div>
-    <div class="punteado" id="global" name = "divSinCom">
-      <canvas id="SinCom" width="200" height="600">Navegador no soporta canvas :( </canvas>
-    </div>
-    <div id="iDatosBusFueraRuta" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
-    </div>   
-    <div id="iDatosBusEncierro" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
-    </div>  
-    <div id="iDatosBusMantenimiento" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
-    </div>  
-    <div id="iDatosBusExceso" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
-    </div>  
-    <div id="iDatosBusBloqueos" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
-    </div>  
-    <div id="iDatosBusSinCom" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
-    </div>  
-  </div>
-</div>
-</div>
-    
+      <div class="container" id="global">
+        <div class="row row-cols-4">
+          <div class="punteado" id="global" name = "divEncierro">
+            <canvas id="Encierro" width="200" height="600">Navegador no soporta canvas :( </canvas>
+          </div>
+          <div class="punteado" id="global" name = "divFueraRuta">
+            <canvas id="FueraRuta" width="200" height="600">Navegador no soporta canvas :( </canvas>
+          </div>
+          <div class="punteado" id="global" name = "divMantenimiento">
+            <canvas id="Mantenimiento" width="200" height="600">Navegador no soporta canvas :( </canvas>
+          </div>
+          <div class="punteado" id="global" name = "divExceso">
+            <canvas id="Exceso" width="200" height="600">Navegador no soporta canvas :( </canvas>
+          </div>
+          <div class="punteado" id="global" name = "divBloqueos">
+            <canvas id="Bloqueos" width="200" height="600">Navegador no soporta canvas :( </canvas>
+          </div>    
+          <div class="punteado" id="global">
+            <canvas id="Estatus" width="200" height="600">Navegador no soporta canvas :( </canvas>
+          </div>
+          <div class="punteado" id="global" name = "divSinCom">
+            <canvas id="SinCom" width="200" height="600">Navegador no soporta canvas :( </canvas>
+          </div>
+          <div id="iDatosBusFueraRuta" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
+          </div>   
+          <div id="iDatosBusEncierro" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
+          </div>  
+          <div id="iDatosBusMantenimiento" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
+          </div>  
+          <div id="iDatosBusExceso" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
+          </div>  
+          <div id="iDatosBusBloqueos" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
+          </div>  
+          <div id="iDatosBusSinCom" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
+          </div>  
+        </div>
+      </div>    
       <div class="p-1 mb-0 bg-primary text-white">   
-      <div class="footer-copyright text-center py-1">  COPYRIGHT  SISTEMA BEA V1.3 | DESARROLLO DE SOFTWARE |  |
-   
-   </div>
+        <div class="footer-copyright text-center py-1">  COPYRIGHT  SISTEMA BEA V1.3 | DESARROLLO DE SOFTWARE |  |   
+        </div>
       </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

@@ -42,6 +42,8 @@ class Vehiculo {
 
     ctx; 
     pInicio;
+    avanceX;
+    avanceY;
     buscar = false;
     buscarBloqueos = false;
     buscarSinCom = false;
@@ -65,7 +67,7 @@ class Vehiculo {
     xSinCom = -1;
     ySinCom = -1;
 
-    constructor(vehiculo, ctx, pInicio) {               
+    constructor(vehiculo, ctx, pInicio, avanceX, avanceY) {               
         this.nombre = vehiculo["nombre"];
 		this.id = parseInt(vehiculo["id"]);
 		this.IMEI = vehiculo["IMEI"];
@@ -99,6 +101,8 @@ class Vehiculo {
         this.comEstado.conectado = parseInt(vehiculo["conectado"]);
         this.ctx = ctx;  
         this.pInicio = pInicio;
+        this.avanceX = avanceX;
+        this.avanceY = avanceY;
         this.exceso = false;
         this.textExtra = '';      
         this.googleURL = "http://www.miruta.com.mx/localizacion/ubicarBUS.aspx?lat=" +  String(this.latitud/1000000) + "&lon=" + String(this.longitud/1000000) + ""; 
@@ -119,12 +123,13 @@ class Vehiculo {
                 // Revisamos si está en horario de verano
                 if (this.isDstSwitchDates() && this.isDST(this.fecha)) {                
                     this.fecha.setHours(this.fecha.getHours() + 1);
+                    this.fecha.setMonth(this.fecha.getMonth() - 1);
                 } 
             } else {
                 this.fecha = new Date(ano, mes, dia, hora, minuto, segundo);
             }
             // Separamos la fecha y la hora para mostrar como datos del autobús
-            this.fechaText = this.pad2(this.fecha.getDate()) + "/" + this.pad2(this.fecha.getMonth()) + "/" + this.fecha.getFullYear();
+            this.fechaText = this.pad2(this.fecha.getDate()) + "/" + this.pad2(this.fecha.getMonth()+1) + "/" + this.fecha.getFullYear();
             this.horaText = this.pad2(this.fecha.getHours()) + ":" + this.pad2(this.fecha.getMinutes()) + ":" + this.pad2(this.fecha.getSeconds());
         } else {
             this.fecha = vehiculo["fecha"];
@@ -149,19 +154,20 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText + "\n" + 
+                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
                  this.textExtra;
         iDiv.innerText = cadena;
+        var cb = document.getElementById("canvas2").getBoundingClientRect();        
         if (this.textExtra.length > 0) {
-            y = y - 150 + 250;
+            y = y - 240 ;
         } else {
-            y = y - 150 + 280;
+            y = y - 210 ;
         }
-        iDiv.style.left = x - 60 + 200 + 'px';
-        iDiv.style.top =  y + 'px';
+        iDiv.style.left = x  + 60 + 'px';
+        iDiv.style.top =  y + 60 + 'px';
     }
 
     mostrarInfoPantallaFueraRuta(x, y) {
@@ -170,7 +176,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText + "\n" + 
+                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -181,7 +187,7 @@ class Vehiculo {
         } else {
             y -= 150;
         }
-        iDiv.style.left = x - 60 + 500 + 'px';
+        iDiv.style.left = x - 60 + (document.body.clientWidth / 2.7) + 'px';
         iDiv.style.top =  y - iDiv2[0].scrollTop + 'px';
     }
 
@@ -191,7 +197,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText + "\n" + 
+                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -202,7 +208,7 @@ class Vehiculo {
         } else {
             y -= 150;
         }
-        iDiv.style.left = x - 60 + 300 + 'px';
+        iDiv.style.left = x - 60 + (document.body.clientWidth / 4.5) + 'px';
         iDiv.style.top =  y - iDiv2[0].scrollTop + 'px';
     }
 
@@ -212,7 +218,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText + "\n" + 
+                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -223,7 +229,7 @@ class Vehiculo {
         } else {
             y -= 150;
         }    
-        iDiv.style.left = x - 60 + 800 + 'px';
+        iDiv.style.left = x - 60 + (document.body.clientWidth / 2) + 'px';
         iDiv.style.top =  y - iDiv2[0].scrollTop + 'px';
     }
 
@@ -233,7 +239,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText + "\n" + 
+                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -244,7 +250,7 @@ class Vehiculo {
         } else {
             y -= 150;
         }
-        iDiv.style.left = x - 60 + 1000 + 'px';
+        iDiv.style.left = x - 60 + (document.body.clientWidth / 1.5) + 'px';
         iDiv.style.top =  y - iDiv2[0].scrollTop + 'px';
     }
 
@@ -254,7 +260,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText + "\n" + 
+                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -265,7 +271,7 @@ class Vehiculo {
         } else {
             y -= 150;
         }
-        iDiv.style.left = x - 60 + 800 + 'px';
+        iDiv.style.left = x - 60 + (document.body.clientWidth / 2) + 'px';
         iDiv.style.top =  y - iDiv2[0].scrollTop + 'px';
     }
 
@@ -275,7 +281,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText + "\n" + 
+                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -286,13 +292,13 @@ class Vehiculo {
         } else {
             y -= 150;
         }
-        iDiv.style.left = x - 60 + 300 + 'px';
+        iDiv.style.left = x - 60 + (document.body.clientWidth / 4.5) + 'px';
         iDiv.style.top =  y - iDiv2[0].scrollTop + 'px';
     }
 
    isOver(mx, my, ox, oy) {        
-        var deltaX = this.diff(this.x, mx);
-        var deltaY = this.diff(this.y, my);
+        var deltaX = this.diff((this.x * sx) + this.avanceX, mx);
+        var deltaY = this.diff((this.y * sy) + this.avanceY, my);
         var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));                                
         if (dist <= 8) {
             this.mostrarInfoPantalla(ox, oy);
@@ -375,12 +381,12 @@ class Vehiculo {
     }
 
     mostrarInfo(mx, my, ox, oy) {     
-        var deltaX = this.diff(this.x, mx);
-        var deltaY = this.diff(this.y, my);
+        var deltaX = this.diff((this.x * sx) + this.avanceX, mx);
+        var deltaY = this.diff((this.y * sy) + this.avanceY, my);
         var dist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
         //console.log(dist);
         if (dist <= 8) {
-            this.mostrarInfoPantalla(ox, oy);
+            //this.mostrarInfoPantalla(ox, oy);
             return true;
         } else {
             return false;
@@ -406,17 +412,17 @@ class Vehiculo {
             case 180: // regreso
                 this.ctx.beginPath();
                 this.ctx.fillStyle = this.color;
-                this.ctx.moveTo(this.x + this.pInicio + 5, this.y - 5);
-                this.ctx.lineTo(this.x + this.pInicio + 5, this.y + 5);
-                this.ctx.lineTo(this.x + this.pInicio, this.y + 5);
-                this.ctx.lineTo(this.x + this.pInicio - 5, this.y);
-                this.ctx.lineTo(this.x + this.pInicio, this.y - 5);
-                this.ctx.lineTo(this.x + this.pInicio + 5, this.y - 5);
+                this.ctx.moveTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy) - 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy) + 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) + 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) - 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy)- 5 + this.avanceY);
                 this.ctx.fill();                
                 this.ctx.fillStyle = "#000000";
                 this.ctx.font = "700 7px Arial";
                 this.ctx.textAlign = "center";
-                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), this.x + this.pInicio, this.y + 15); 
+                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), (this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) + 15 + this.avanceY); 
                 this.ctx.stroke();                                        
                 this.ctx.closePath(); 
                 break;
@@ -424,55 +430,67 @@ class Vehiculo {
             default:
                 this.ctx.beginPath();
                 this.ctx.fillStyle = this.color;
-                this.ctx.moveTo(this.x + this.pInicio - 5, this.y - 5);
-                this.ctx.lineTo(this.x + this.pInicio - 5, this.y + 5);
-                this.ctx.lineTo(this.x + this.pInicio, this.y + 5);
-                this.ctx.lineTo(this.x + this.pInicio + 5, this.y);
-                this.ctx.lineTo(this.x + this.pInicio, this.y - 5);
-                this.ctx.lineTo(this.x + this.pInicio - 5, this.y - 5);
+                this.ctx.moveTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) - 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) + 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) + 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy) + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) - 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) - 5 + this.avanceY);
                 this.ctx.fill();
                 this.ctx.fillStyle = "#000000";
                 this.ctx.font = "700 7px Arial";
                 this.ctx.textAlign = "center";
-                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), this.x + this.pInicio, this.y - 10); 
+                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), (this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) - 10 + this.avanceY); 
                 this.ctx.stroke();                                        
                 this.ctx.closePath(); 
                 break;
             case 270: // Arriba
                 this.ctx.beginPath();
                 this.ctx.fillStyle = this.color;
-                this.ctx.moveTo(this.x + this.pInicio - 5, this.y + 5);
-                this.ctx.lineTo(this.x + this.pInicio + 5, this.y + 5);
-                this.ctx.lineTo(this.x + this.pInicio + 5, this.y);
-                this.ctx.lineTo(this.x + this.pInicio, this.y - 5);
-                this.ctx.lineTo(this.x + this.pInicio - 5, this.y);
-                this.ctx.lineTo(this.x + this.pInicio - 5, this.y + 5);
+                this.ctx.moveTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) + 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy) + 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy) + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) - 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) + 5 + this.avanceY);
                 this.ctx.fill();
                 this.ctx.fillStyle = "#000000";
                 this.ctx.font = "700 7px Arial";
                 this.ctx.textAlign = "right";
-                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), this.x + this.pInicio - 10, this.y + 5); 
+                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), (this.x * sx) + this.pInicio + this.avanceX - 10, (this.y * sy) + 5 + this.avanceY); 
                 this.ctx.stroke();                                        
                 this.ctx.closePath(); 
                 break;
             case 90: // Abajo
                 this.ctx.beginPath();
                 this.ctx.fillStyle = this.color;
-                this.ctx.moveTo(this.x + this.pInicio - 5, this.y - 5);
-                this.ctx.lineTo(this.x + this.pInicio + 5, this.y - 5);
-                this.ctx.lineTo(this.x + this.pInicio + 5, this.y);
-                this.ctx.lineTo(this.x + this.pInicio, this.y + 5);
-                this.ctx.lineTo(this.x + this.pInicio - 5, this.y);
-                this.ctx.lineTo(this.x + this.pInicio - 5, this.y - 5);
+                this.ctx.moveTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) - 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy) - 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX + 5, (this.y * sy) + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) + 5 + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) + this.avanceY);
+                this.ctx.lineTo((this.x * sx) + this.pInicio + this.avanceX - 5, (this.y * sy) - 5 + this.avanceY);
                 this.ctx.fill();
                 this.ctx.fillStyle = "#000000";
                 this.ctx.font = "700 7px Arial";
                 this.ctx.textAlign = "right";
-                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), this.x + this.pInicio + 25, this.y); 
+                this.ctx.fillText(this.nombre.split("").join(String.fromCharCode(8202)), (this.x * sx) + this.pInicio + this.avanceX + 25, (this.y * sy) + this.avanceY); 
                 this.ctx.stroke();                                        
                 this.ctx.closePath(); 
                 break;
-        }                
+        }    
+        if (this.buscar) {
+            this.ctx.beginPath();
+            this.ctx.lineWidth = 0;
+            this.ctx.fillStyle = "red";
+            this.ctx.globalAlpha = 0.3;
+            this.ctx.arc((this.x * sx) + this.pInicio + this.avanceX, (this.y * sy) + avanceY, 10, 0, 2 * Math.PI);
+            this.ctx.stroke();
+            this.ctx.fill();
+            this.ctx.closePath();
+            this.ctx.lineWidth = 1;
+            this.ctx.globalAlpha = 1;
+        }              
     }
 
     actualizarDatos(camion) {
@@ -586,7 +604,7 @@ class Vehiculo {
         this.y = y;
         this.tramo = tramo;		
         this.nodoActual = nodoActual;
-        console.log("entro3");
+        //console.log("entro3");
         this.isDisconnected();
     }
 
@@ -774,12 +792,8 @@ class Vehiculo {
     }
 
     convertUTCDateToLocalDate(date) {
-        var newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
-    
-        var offset = date.getTimezoneOffset() / 60;
-        var hours = date.getHours();
-    
-        newDate.setHours(hours - offset);
+        var newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+        
         return newDate;   
     }
 
@@ -896,9 +910,9 @@ class Vehiculos {
         return this.listaVehiculos;
     }
 
-    constructor(vehiculos, ctx, pInicio) { 
+    constructor(vehiculos, ctx, pInicio, avanceX, avanceY) { 
         for (var i = 0; i < vehiculos.length; i++) {
-            var vehiculo = new Vehiculo(vehiculos[i], ctx, pInicio);
+            var vehiculo = new Vehiculo(vehiculos[i], ctx, pInicio, avanceX, avanceY);
             vehiculo.flashIndex = i;
 
             this.listaVehiculos.push(vehiculo);
