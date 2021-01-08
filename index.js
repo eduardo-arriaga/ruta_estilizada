@@ -43,6 +43,11 @@ var nombreGrupo = "";
 var sx = 1;
 var sy = 1;
 
+var currentX;
+var currentY;
+var initialX;
+var initialY;
+
 var max = {
   x: 0,
   y: 0
@@ -53,9 +58,7 @@ var min = {
   y: 0
 }
 
-var mouse = {
-  x: 0,
-  y: 0,
+var mouse = {  
   drag: false
 };
 
@@ -150,6 +153,8 @@ function onMouseOut(event) {
 function onMouseUp(event) {
   if (puntero == 'grab') {          
     mouse.drag = !mouse.drag;
+    initialX = currentX;
+    initialY = currentY;
   }
   return false;
 }
@@ -175,8 +180,8 @@ function onMouseDown(event) {
     case "grab":
       mousePos = getMousePos(canvasBuses, event);
       mouse.drag = !mouse.drag;
-      mouse.x = mousePos.x;
-      mouse.y = mousePos.y;
+      initialX = event.clientX - avanceX;
+      initialY = event.clientY - avanceY;
       break;
     case "zoom-in":
       mousePos = getMousePos(canvasBuses, event);  
@@ -343,19 +348,12 @@ function onMouseMove(event) {
     }
     return result;
   } else {
-    //console.log("mouse.drag=" + mouse.drag);
     if (mouse.drag == true) {
+      currentX = event.clientX - initialX;
+      currentY = event.clientY - initialY;
       mousePos = getMousePos(canvasBuses, event);
-      if (mousePos.y < mouse.y) {
-        avanceY = avanceY - 7;
-      } else {
-        avanceY = avanceY + 7;
-      }
-      if (mousePos.x < mouse.x) {
-        avanceX = avanceX - 7;
-      } else {
-        avanceX = avanceX + 7;
-      }
+      avanceX = currentX;
+      avanceY = currentY;      
       repintaTodo();
     } 
   }
