@@ -304,82 +304,105 @@ function initCamiones(ctx) {
 	depth = nodos.listaNodos.length;
 	ctx.beginPath();
 	for (var z = 0; z < vehiculos.listaVehiculos.length; z++) {
-		countActivo++;
-		if (vehiculos.listaVehiculos[z].tramo == null) {
-			lClosest = findClosestFirstNode(vehiculos.listaVehiculos[z]);
+		try {
+			countActivo++;
+			if (vehiculos.listaVehiculos[z].tramo == null) {
+				lClosest = findClosestFirstNode(vehiculos.listaVehiculos[z]);
 
-			distance = lClosest.getDisplacement(vehiculos.listaVehiculos[z]);
-			posX = lClosest.calculateX(distance);
-			posY = lClosest.calculateY(distance);
-			vehiculos.listaVehiculos[z].actualizarPantalla(posX, posY, lClosest.direccionxy, lClosest, lClosest.nodoIni.orden);
-		} else {
-			lClosest = vehiculos.listaVehiculos[z].tramo;
+				distance = lClosest.getDisplacement(vehiculos.listaVehiculos[z]);
+				posX = lClosest.calculateX(distance);
+				posY = lClosest.calculateY(distance);
+				vehiculos.listaVehiculos[z].actualizarPantalla(posX, posY, lClosest.direccionxy, lClosest, lClosest.nodoIni.orden);
+			} else {
+				lClosest = vehiculos.listaVehiculos[z].tramo;
 
-			distance = lClosest.getDisplacement(vehiculos.listaVehiculos[z]);
-			posX = lClosest.calculateX(distance);
-			posY = lClosest.calculateY(distance);
-		}
-		if (vehiculos.listaVehiculos[z].comEstado.conectado != 1) {
-			countDesconect ++;
-			countActivo--;
-			listaSinCom.push(vehiculos.listaVehiculos[z]);
-			vehiculos.listaVehiculos[z].visible = false;
-		} else if (checkEncierros(vehiculos.listaVehiculos[z]) >= 0) {			
-			countEncierro ++;
-			listaEncierro.push(vehiculos.listaVehiculos[z]);
-			vehiculos.listaVehiculos[z].visible = false;
-		} else if (lClosest.isInRange(vehiculos.listaVehiculos[z], lClosest.nodoIni.radio)) {
-			countRuta++;
-			vehiculos.listaVehiculos[z].visible = true;
-			if (vehiculos.listaVehiculos[z].exceso) {
-				listaExceso.push(vehiculos.listaVehiculos[z]);
-				countExceso++;
+				distance = lClosest.getDisplacement(vehiculos.listaVehiculos[z]);
+				posX = lClosest.calculateX(distance);
+				posY = lClosest.calculateY(distance);
 			}
-			vehiculos.listaVehiculos[z].avanceX = avanceX;
-			vehiculos.listaVehiculos[z].avanceY = avanceY;
-			vehiculos.listaVehiculos[z].dibujar();
-		} else {
-			countFuera ++;
-			listaFueraRuta.push(vehiculos.listaVehiculos[z]);
-			vehiculos.listaVehiculos[z].visible = false;
-			if (vehiculos.listaVehiculos[z].velocidad > nodos.listaNodos[vehiculos.listaVehiculos[z].nodoActual].velocidad) {
-				listaExceso.push(vehiculos.listaVehiculos[z]);
-				countExceso++;
-			}  
-		}
-		//Aqui guardamos en el arreglo movies la referencia al nuevo movieclip
-		//movies[z] = tempMC;
-		//Aqui ponemos los bloqueos
-		if ((vehiculos.listaVehiculos[z].bloqueos1 > 0) || (vehiculos.listaVehiculos[z].bloqueos2 > 0)) {	
-			countBloqueos++;	
-			listaBloqueos.push(vehiculos.listaVehiculos[z]);	
-			vehiculos.listaVehiculos[z].textExtra += "\nBloqueos1: " + vehiculos.listaVehiculos[z].bloqueos1;	
-			vehiculos.listaVehiculos[z].textExtra += "\nBloqueos2: " + vehiculos.listaVehiculos[z].bloqueos2;						
-		}		
-		//Aqui ponemos los status				
-		if ((!vehiculos.listaVehiculos[z].comPuertas1) || (!vehiculos.listaVehiculos[z].comPuertas2) || ((vehiculos.listaVehiculos[z].estatus > 0) && (vehiculos.listaVehiculos[z].estatus < 4)) || (vehiculos.listaVehiculos[z].estatus == 7) || (vehiculos.listaVehiculos[z].comEstado.puerta1) || (vehiculos.listaVehiculos[z].comEstado.puerta2)) {			
-			countStatus++;
-			listaEstatus.push(vehiculos.listaVehiculos[z]);
-			listaMantenimiento.push(vehiculos.listaVehiculos[z]);				
-			if (!vehiculos.listaVehiculos[z].comPuertas1 || vehiculos.listaVehiculos[z].comEstado.puerta1) {
-				vehiculos.listaVehiculos[z].textExtra += "\nError Com. Puerta 1";
+			if (vehiculos.listaVehiculos[z].comEstado.conectado != 1) {
+				countDesconect ++;
+				countActivo--;
+				if (vehiculos.listaVehiculos[z].buscar) {
+					vehiculos.listaVehiculos[z].buscarSinCom = true;
+				}
+				listaSinCom.push(vehiculos.listaVehiculos[z]);
+				vehiculos.listaVehiculos[z].visible = false;
+			} else if (checkEncierros(vehiculos.listaVehiculos[z]) >= 0) {			
+				countEncierro ++;
+				if (vehiculos.listaVehiculos[z].buscar) {
+					vehiculos.listaVehiculos[z].buscarEncierro = true;
+				}
+				listaEncierro.push(vehiculos.listaVehiculos[z]);
+				vehiculos.listaVehiculos[z].visible = false;
+			} else if (lClosest.isInRange(vehiculos.listaVehiculos[z], lClosest.nodoIni.radio)) {
+				countRuta++;
+				vehiculos.listaVehiculos[z].visible = true;
+				if (vehiculos.listaVehiculos[z].exceso) {
+					if (vehiculos.listaVehiculos[z].buscar) {
+						vehiculos.listaVehiculos[z].buscarExceso = true;
+					}
+					listaExceso.push(vehiculos.listaVehiculos[z]);
+					countExceso++;
+				}
+				vehiculos.listaVehiculos[z].avanceX = avanceX;
+				vehiculos.listaVehiculos[z].avanceY = avanceY;
+				vehiculos.listaVehiculos[z].dibujar();
+			} else {
+				countFuera ++;
+				if (vehiculos.listaVehiculos[z].buscar) {
+					vehiculos.listaVehiculos[z].ctxFueraRuta = true;
+				}
+				listaFueraRuta.push(vehiculos.listaVehiculos[z]);
+				vehiculos.listaVehiculos[z].visible = false;
+				if (vehiculos.listaVehiculos[z].velocidad > nodos.listaNodos[vehiculos.listaVehiculos[z].nodoActual].velocidad) {
+					if (vehiculos.listaVehiculos[z].buscar) {
+						vehiculos.listaVehiculos[z].buscarExceso = true;
+					}
+					listaExceso.push(vehiculos.listaVehiculos[z]);
+					countExceso++;
+				}  
 			}
-			if (!vehiculos.listaVehiculos[z].comPuertas2 || vehiculos.listaVehiculos[z].comEstado.puerta2) {
-				vehiculos.listaVehiculos[z].textExtra += "\nError Com. Puerta 2";
+			//Aqui guardamos en el arreglo movies la referencia al nuevo movieclip
+			//movies[z] = tempMC;
+			//Aqui ponemos los bloqueos
+			if ((vehiculos.listaVehiculos[z].bloqueos1 > 0) || (vehiculos.listaVehiculos[z].bloqueos2 > 0)) {	
+				countBloqueos++;
+				if (vehiculos.listaVehiculos[z].buscar) {
+					vehiculos.listaVehiculos[z].buscarBloqueos = true;
+				}	
+				listaBloqueos.push(vehiculos.listaVehiculos[z]);	
+				vehiculos.listaVehiculos[z].textExtra += "\nBloqueos1: " + vehiculos.listaVehiculos[z].bloqueos1;	
+				vehiculos.listaVehiculos[z].textExtra += "\nBloqueos2: " + vehiculos.listaVehiculos[z].bloqueos2;						
+			}		
+			//Aqui ponemos los status				
+			if ((!vehiculos.listaVehiculos[z].comPuertas1) || (!vehiculos.listaVehiculos[z].comPuertas2) || ((vehiculos.listaVehiculos[z].estatus > 0) && (vehiculos.listaVehiculos[z].estatus < 4)) || (vehiculos.listaVehiculos[z].estatus == 7) || (vehiculos.listaVehiculos[z].comEstado.puerta1) || (vehiculos.listaVehiculos[z].comEstado.puerta2)) {			
+				countStatus++;
+				listaEstatus.push(vehiculos.listaVehiculos[z]);
+				if (vehiculos.listaVehiculos[z].buscar) {
+					vehiculos.listaVehiculos[z].buscarMantenimiento = true;
+				}
+				listaMantenimiento.push(vehiculos.listaVehiculos[z]);				
+				if (!vehiculos.listaVehiculos[z].comPuertas1 || vehiculos.listaVehiculos[z].comEstado.puerta1) {
+					vehiculos.listaVehiculos[z].textExtra += "\nError Com. Puerta 1";
+				}
+				if (!vehiculos.listaVehiculos[z].comPuertas2 || vehiculos.listaVehiculos[z].comEstado.puerta2) {
+					vehiculos.listaVehiculos[z].textExtra += "\nError Com. Puerta 2";
+				}
+				if (vehiculos.listaVehiculos[z].estatus == 1) {
+					vehiculos.listaVehiculos[z].textExtra += "\nError Com. BEA";
+				}
+				if (vehiculos.listaVehiculos[z].estatus == 2) {
+					vehiculos.listaVehiculos[z].textExtra += "\nError Com. GPS";
+				}
+				if (vehiculos.listaVehiculos[z].estatus == 3) {
+					vehiculos.listaVehiculos[z].textExtra += "\nError Com. SAC";
+				}
+				if (vehiculos.listaVehiculos[z].estatus == 7) {
+					vehiculos.listaVehiculos[z].textExtra += "\nDescarga Completa";
+				}
 			}
-			if (vehiculos.listaVehiculos[z].estatus == 1) {
-				vehiculos.listaVehiculos[z].textExtra += "\nError Com. BEA";
-			}
-			if (vehiculos.listaVehiculos[z].estatus == 2) {
-				vehiculos.listaVehiculos[z].textExtra += "\nError Com. GPS";
-			}
-			if (vehiculos.listaVehiculos[z].estatus == 3) {
-				vehiculos.listaVehiculos[z].textExtra += "\nError Com. SAC";
-			}
-			if (vehiculos.listaVehiculos[z].estatus == 7) {
-				vehiculos.listaVehiculos[z].textExtra += "\nDescarga Completa";
-			}
-		} 
+		} catch(error) {}
 	}
 	ctx.closePath();
 	ctx.restore();
@@ -413,6 +436,12 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 	listaMantenimiento.length = 0;
 	listaEstatus.length = 0;
 	listaEncierro.length = 0;
+	ctxBloqueos.clearRect(0, 0, 200, 600);
+	ctxSinCom.clearRect(0, 0, 200, 600);
+	ctxExceso.clearRect(0, 0, 200, 600);
+	ctxFueraRuta.clearRect(0, 0, 200, 600);
+	ctxMantenimiento.clearRect(0, 0, 200, 600);
+	ctxEncierro.clearRect(0, 0, 200, 600);
 
 	depth = nodos.listaNodos.length;
 	var activos = new Array();
@@ -421,108 +450,130 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 	ctxBuses.clearRect(0, 0, canvasBuses.width, canvasBuses.height);
 	ctxBuses.beginPath();
 	//console.log("Entrando actualizaCamiones");
-	for (var z = 0; z < datos.length; z++) {	
-		camion = vehiculos.listaVehiculos.find(x => x.id === parseInt(datos[z]['id']));
-		//console.log("Entrando bus: " + camion.nombre);
-		//console.log(z);
-		//console.log(datos[z]);
-		//console.log(camion);
-		if (typeof(camion) != "undefined") {	
-			countActivo++;		
-			camion.actualizarDatos(datos[z]);
-			camion.tramo = null;
-			if (camion.tramo == null) {
-				lClosest = findClosestFirstNode(camion);
-	
+	for (var z = 0; z < datos.length; z++) {
+		try {	
+			camion = vehiculos.listaVehiculos.find(x => x.id === parseInt(datos[z]['id']));
+			//console.log("Entrando bus: " + camion.nombre);
+			//console.log(z);
+			//console.log(datos[z]);
+			//console.log(camion);
+			if (typeof(camion) != "undefined") {	
+				countActivo++;		
+				camion.actualizarDatos(datos[z]);
+				camion.tramo = null;
+				if (camion.tramo == null) {
+					lClosest = findClosestFirstNode(camion);
+		
+					distance = lClosest.getDisplacement(camion);
+					posX = lClosest.calculateX(distance);
+					posY = lClosest.calculateY(distance);
+					camion.actualizarPantalla(posX, posY, lClosest.direccionxy, lClosest, lClosest.nodoIni.orden);
+				}
+				lClosest = findClosestTip(camion);
+				if (lClosest.qualifyRange(camion) < 0) {
+					lClosest = findClosestNode2(camion);
+				}
 				distance = lClosest.getDisplacement(camion);
 				posX = lClosest.calculateX(distance);
 				posY = lClosest.calculateY(distance);
+				if (lClosest.invisible)
+				{
+					posX = lClosest.nodoIni.x;
+					posY = lClosest.nodoIni.y;
+				}
 				camion.actualizarPantalla(posX, posY, lClosest.direccionxy, lClosest, lClosest.nodoIni.orden);
-			}
-			lClosest = findClosestTip(camion);
-			if (lClosest.qualifyRange(camion) < 0) {
-				lClosest = findClosestNode2(camion);
-			}
-			distance = lClosest.getDisplacement(camion);
-			posX = lClosest.calculateX(distance);
-			posY = lClosest.calculateY(distance);
-			if (lClosest.invisible)
-			{
-				posX = lClosest.nodoIni.x;
-				posY = lClosest.nodoIni.y;
-			}
-
-			camion.actualizarPantalla(posX, posY, lClosest.direccionxy, lClosest, lClosest.nodoIni.orden);
-			if (camion.comEstado.conectado != 1) {
-				countActivo--;
-				countDesconect++;
-				listaSinCom.push(camion);				
-				camion.visible = false;
-								
-			} else if (checkEncierros(camion) >= 0) {
-				countEncierro ++;
-				listaEncierro.push(camion);
-				camion.visible = false;
-				
-			} else if (lClosest.isInRange(camion, lClosest.nodoIni.radio)) {
-				countRuta++;
-				camion.visible = true;
-				vehiculos.listaVehiculos[z].avanceX = avanceX;
-				vehiculos.listaVehiculos[z].avanceY = avanceY;
-				vehiculos.listaVehiculos[z].dibujar();
-				if (camion.exceso) {
-					listaExceso.push(camion);
-					countExceso++;
-				}
+				if (camion.comEstado.conectado != 1) {
+					countActivo--;
+					countDesconect++;
+					if (vehiculos.listaVehiculos[z].buscar) {
+						vehiculos.listaVehiculos[z].buscarSinCom = true;
+					}
+					listaSinCom.push(camion);				
+					camion.visible = false;
+									
+				} else if (checkEncierros(camion) >= 0) {
+					countEncierro ++;
+					if (vehiculos.listaVehiculos[z].buscar) {
+						vehiculos.listaVehiculos[z].buscarEncierro = true;
+					}
+					listaEncierro.push(camion);
+					camion.visible = false;
 					
-			} else {
-				countFuera ++;
-				listaFueraRuta.push(camion);
-				camion.visible = false;
-				if (camion.velocidad > nodos.listaNodos[camion.nodoActual].velocidad) {
-					listaExceso.push(camion);
-					countExceso++;
-				}    
-			}
-			//Aqui ponemos los bloqueos
-			if ((camion.bloqueos1 > 0) || (camion.bloqueos2 > 0)) {	
-				countBloqueos++;	
-				listaBloqueos.push(camion);	
-				camion.textExtra += "\nBloqueos1: " + camion.bloqueos1;	
-				camion.textExtra += "\nBloqueos2: " + camion.bloqueos2;			
-				
-			}		
-			//Aqui ponemos los status	
-			if ((!camion.comPuertas1) || (!camion.comPuertas2) || ((camion.estatus > 0) && (camion.estatus < 4)) || (camion.estatus == 7) || (camion.comEstado.puerta1) || (camion.comEstado.puerta2)) {			
-				countStatus++;
-				listaEstatus.push(camion);
-				listaMantenimiento.push(camion);				
-				if (!camion.comPuertas1 || camion.comEstado.puerta1)
-				{
-					camion.textExtra += "\nError Com. Puerta 1";
+				} else if (lClosest.isInRange(camion, lClosest.nodoIni.radio)) {
+					countRuta++;
+					camion.visible = true;
+					vehiculos.listaVehiculos[z].avanceX = avanceX;
+					vehiculos.listaVehiculos[z].avanceY = avanceY;
+					vehiculos.listaVehiculos[z].dibujar();
+					if (camion.exceso) {
+						if (vehiculos.listaVehiculos[z].buscar) {
+							vehiculos.listaVehiculos[z].buscarExceso = true;
+						}
+						listaExceso.push(camion);
+						countExceso++;
+					}
+						
+				} else {
+					countFuera ++;
+					if (vehiculos.listaVehiculos[z].buscar) {
+						vehiculos.listaVehiculos[z].buscarFueraRuta = true;
+					}
+					listaFueraRuta.push(camion);
+					camion.visible = false;
+					if (camion.velocidad > nodos.listaNodos[camion.nodoActual].velocidad) {
+						if (vehiculos.listaVehiculos[z].buscar) {
+							vehiculos.listaVehiculos[z].buscarExceso = true;
+						}
+						listaExceso.push(camion);
+						countExceso++;
+					}    
 				}
-				if (!camion.comPuertas2 || camion.comEstado.puerta2)
-				{
-					camion.textExtra += "\nError Com. Puerta 2";
-				}
-				if (camion.estatus == 1)
-				{
-					camion.textExtra += "\nError Com. BEA";
-				}
-				if (camion.estatus == 2)
-				{
-					camion.textExtra += "\nError Com. GPS";
-				}
-				if (camion.estatus == 3)
-				{
-					camion.textExtra += "\nError Com. SAC";
-				}
-				if (camion.estatus == 7)
-				{
-					camion.textExtra += "\nDescarga Completa";
-				}			
-			} 
-		}		
+				//Aqui ponemos los bloqueos
+				if ((camion.bloqueos1 > 0) || (camion.bloqueos2 > 0)) {	
+					countBloqueos++;
+					if (vehiculos.listaVehiculos[z].buscar) {
+						vehiculos.listaVehiculos[z].buscarBloqueos = true;
+					}	
+					listaBloqueos.push(camion);	
+					camion.textExtra += "\nBloqueos1: " + camion.bloqueos1;	
+					camion.textExtra += "\nBloqueos2: " + camion.bloqueos2;			
+					
+				}		
+				//Aqui ponemos los status	
+				if ((!camion.comPuertas1) || (!camion.comPuertas2) || ((camion.estatus > 0) && (camion.estatus < 4)) || (camion.estatus == 7) || (camion.comEstado.puerta1) || (camion.comEstado.puerta2)) {			
+					countStatus++;
+					listaEstatus.push(camion);
+					if (vehiculos.listaVehiculos[z].buscar) {
+						vehiculos.listaVehiculos[z].buscarMantenimiento = true;
+					}
+					listaMantenimiento.push(camion);				
+					if (!camion.comPuertas1 || camion.comEstado.puerta1)
+					{
+						camion.textExtra += "\nError Com. Puerta 1";
+					}
+					if (!camion.comPuertas2 || camion.comEstado.puerta2)
+					{
+						camion.textExtra += "\nError Com. Puerta 2";
+					}
+					if (camion.estatus == 1)
+					{
+						camion.textExtra += "\nError Com. BEA";
+					}
+					if (camion.estatus == 2)
+					{
+						camion.textExtra += "\nError Com. GPS";
+					}
+					if (camion.estatus == 3)
+					{
+						camion.textExtra += "\nError Com. SAC";
+					}
+					if (camion.estatus == 7)
+					{
+						camion.textExtra += "\nDescarga Completa";
+					}			
+				} 
+			}	
+		} catch(error) {}	
 	}
 	ctx.closePath();
 	ctx.restore();
@@ -531,18 +582,11 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 	ctxBloqueos.clearRect(0, 0, 200, 600);
 	ctxBloqueos.lineWidth = 1;
 	ctxBloqueos.strokeStyle = "black";
+	var resaltarTitulo = false;
 	var x = 15;
 	var y = 40;
 	var i = 0;
-	var color = "black";
-	var titulo = "Bloqueos: " + listaBloqueos.length;
-	ctxBloqueos.beginPath();
-	ctxBloqueos.fillStyle = "#000000";
-	ctxBloqueos.font = "700 12px Arial";
-	ctxBloqueos.textAlign = "center";
-	ctxBloqueos.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
-	ctxBloqueos.stroke();   
-	ctxBloqueos.closePath(); 
+	var color = "black";	
 	for (i = 0; i < listaBloqueos.length; i++) {
 		try {
 			listaBloqueos[i].xBloqueo = x;
@@ -562,6 +606,7 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			ctxBloqueos.fillText(listaBloqueos[i].nombre.split("").join(String.fromCharCode(8202)), x, y - 12); 
 			ctxBloqueos.stroke();   
 			if (listaBloqueos[i].buscarBloqueos) {
+				resaltarTitulo = true;
 				ctxBloqueos.lineWidth = 0;
 				ctxBloqueos.fillStyle = "red";
 				ctxBloqueos.globalAlpha = 0.3;
@@ -580,21 +625,31 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			}
 		} catch(error) {}
 	}
+	if (resaltarTitulo) {
+		resaltarTitulo = false;
+		ctxBloqueos.lineWidth = 0;
+        ctxBloqueos.fillStyle = "red";
+		ctxBloqueos.globalAlpha = 0.3;
+        ctxBloqueos.fillRect(0, 0, 200, 15);
+        ctxBloqueos.stroke();  
+	}	
+	var titulo = "Bloqueos: " + listaBloqueos.length;
+	ctxBloqueos.beginPath();
+	ctxBloqueos.lineWidth = 1;
+	ctxBloqueos.globalAlpha = 1;
+	ctxBloqueos.fillStyle = "#000000";
+	ctxBloqueos.font = "700 12px Arial";
+	ctxBloqueos.textAlign = "center";
+	ctxBloqueos.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+	ctxBloqueos.stroke();   
+	ctxBloqueos.closePath(); 
 
 	// Dibujamos los buses del cajón de sin comunicación
 	ctxSinCom.clearRect(0, 0, 200, 600);
 	ctxSinCom.lineWidth = 1;
 	ctxSinCom.strokeStyle = "black";
 	x = 15;
-	y = 40;
-	titulo = "Sin Com: " + countDesconect + "     Con Com: " + (countActivo - countDesconect);
-	ctxSinCom.beginPath();
-	ctxSinCom.fillStyle = "#000000";
-	ctxSinCom.font = "700 12px Arial";
-	ctxSinCom.textAlign = "center";
-	ctxSinCom.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
-	ctxSinCom.stroke();   
-	ctxSinCom.closePath(); 
+	y = 40;	
 	for (i = 0; i < listaSinCom.length; i++) {
 		try {
 			// Color default
@@ -620,6 +675,7 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			ctxSinCom.fillText(listaSinCom[i].nombre.split("").join(String.fromCharCode(8202)), x, y - 12); 
 			ctxSinCom.stroke();    
 			if (listaSinCom[i].buscarSinCom) {
+				resaltarTitulo = true;
 				ctxSinCom.lineWidth = 0;
 				ctxSinCom.fillStyle = "red";
 				ctxSinCom.globalAlpha = 0.3;
@@ -638,21 +694,31 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			}
 		} catch(error) {}
 	}
+	if (resaltarTitulo) {
+		resaltarTitulo = false;
+		ctxSinCom.lineWidth = 0;
+        ctxSinCom.fillStyle = "red";
+		ctxSinCom.globalAlpha = 0.3;
+        ctxSinCom.fillRect(0, 0, 200, 15);
+        ctxSinCom.stroke();  
+	}	
+	titulo = "Sin Com: " + countDesconect + "     Con Com: " + (vehiculos.listaVehiculos.length - countDesconect);
+	ctxSinCom.beginPath();
+	ctxSinCom.lineWidth = 1;
+	ctxSinCom.globalAlpha = 1;
+	ctxSinCom.fillStyle = "#000000";
+	ctxSinCom.font = "700 12px Arial";
+	ctxSinCom.textAlign = "center";
+	ctxSinCom.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+	ctxSinCom.stroke();   
+	ctxSinCom.closePath(); 
 
 	// Dibujamos los buses con exceso
 	ctxExceso.clearRect(0, 0, 200, 600);
 	ctxExceso.lineWidth = 1;
 	ctxExceso.strokeStyle = "black";
 	x = 15;
-	y = 40;
-	titulo = "Exceso de Velocidad: " + listaExceso.length;
-	ctxExceso.beginPath();
-	ctxExceso.fillStyle = "#000000";
-	ctxExceso.font = "700 12px Arial";
-	ctxExceso.textAlign = "center";
-	ctxExceso.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
-	ctxExceso.stroke();   
-	ctxExceso.closePath(); 
+	y = 40;	
 	// Color default
 	color = "red";
 	for (i = 0; i < listaExceso.length; i++) {
@@ -674,6 +740,7 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			ctxExceso.fillText(listaExceso[i].nombre.split("").join(String.fromCharCode(8202)), x, y - 12); 
 			ctxExceso.stroke();  
 			if (listaExceso[i].buscarExceso) {
+				resaltarTitulo = true;
 				ctxExceso.lineWidth = 0;
 				ctxExceso.fillStyle = "red";
 				ctxExceso.globalAlpha = 0.3;
@@ -692,21 +759,31 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			}
 		} catch(error) {}
 	}
+	if (resaltarTitulo) {
+		resaltarTitulo = false;
+		ctxExceso.lineWidth = 0;
+        ctxExceso.fillStyle = "red";
+		ctxExceso.globalAlpha = 0.3;
+        ctxExceso.fillRect(0, 0, 200, 15);
+        ctxExceso.stroke();  
+	}
+	titulo = "Exceso de Velocidad: " + listaExceso.length;
+	ctxExceso.beginPath();
+	ctxExceso.lineWidth = 1;
+	ctxExceso.globalAlpha = 1;
+	ctxExceso.fillStyle = "#000000";
+	ctxExceso.font = "700 12px Arial";
+	ctxExceso.textAlign = "center";
+	ctxExceso.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+	ctxExceso.stroke();   
+	ctxExceso.closePath(); 
 
 	// Dibujamos los buses con fuera de ruta
 	ctxFueraRuta.clearRect(0, 0, 200, 600);
 	ctxFueraRuta.lineWidth = 1;
 	ctxFueraRuta.strokeStyle = "black";
 	x = 15;
-	y = 40;
-	titulo = "Fuera de Ruta: " + countFuera + " En Ruta: " + countRuta;
-	ctxFueraRuta.beginPath();
-	ctxFueraRuta.fillStyle = "#000000";
-	ctxFueraRuta.font = "700 12px Arial";
-	ctxFueraRuta.textAlign = "center";
-	ctxFueraRuta.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
-	ctxFueraRuta.stroke();   
-	ctxFueraRuta.closePath(); 
+	y = 40;	
 	for (i = 0; i < listaFueraRuta.length; i++) {
 		try {
 			// Color default
@@ -737,6 +814,7 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			ctxFueraRuta.fillText(listaFueraRuta[i].nombre.split("").join(String.fromCharCode(8202)), x, y - 12); 
 			ctxFueraRuta.stroke();     
 			if (listaFueraRuta[i].buscarFueraRuta) {
+				resaltarTitulo = true;
 				ctxFueraRuta.lineWidth = 0;
 				ctxFueraRuta.fillStyle = "red";
 				ctxFueraRuta.globalAlpha = 0.3;
@@ -755,6 +833,24 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			}
 		} catch(error) {}
 	}
+	if (resaltarTitulo) {
+		resaltarTitulo = false;
+		ctxFueraRuta.lineWidth = 0;
+        ctxFueraRuta.fillStyle = "red";
+		ctxFueraRuta.globalAlpha = 0.3;
+        ctxFueraRuta.fillRect(0, 0, 200, 15);
+        ctxFueraRuta.stroke();  
+	}
+	titulo = "Fuera de Ruta: " + countFuera + " En Ruta: " + countRuta;
+	ctxFueraRuta.beginPath();
+	ctxFueraRuta.lineWidth = 1;
+	ctxFueraRuta.globalAlpha = 1;
+	ctxFueraRuta.fillStyle = "#000000";
+	ctxFueraRuta.font = "700 12px Arial";
+	ctxFueraRuta.textAlign = "center";
+	ctxFueraRuta.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+	ctxFueraRuta.stroke();   
+	ctxFueraRuta.closePath(); 
 
 	// El cajón de estatus no se utiliza solo lo limparemos
 	ctxEstatus.clearRect(0, 0, 200, 600);
@@ -774,15 +870,7 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 	ctxMantenimiento.lineWidth = 1;
 	ctxMantenimiento.strokeStyle = "black";
 	x = 15;
-	y = 40;
-	titulo = "Mantenimiento: " + countStatus;
-	ctxMantenimiento.beginPath();
-	ctxMantenimiento.fillStyle = "#000000";
-	ctxMantenimiento.font = "700 12px Arial";
-	ctxMantenimiento.textAlign = "center";
-	ctxMantenimiento.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
-	ctxMantenimiento.stroke();   
-	ctxMantenimiento.closePath(); 
+	y = 40;	
 	// Color default
 	color = "blue";
 	for (i = 0; i < listaMantenimiento.length; i++) {
@@ -804,6 +892,7 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			ctxMantenimiento.fillText(listaMantenimiento[i].nombre.split("").join(String.fromCharCode(8202)), x, y - 12); 
 			ctxMantenimiento.stroke();  
 			if (listaMantenimiento[i].buscarMantenimiento) {
+				resaltarTitulo = true;
 				ctxMantenimiento.lineWidth = 0;
 				ctxMantenimiento.fillStyle = "red";
 				ctxMantenimiento.globalAlpha = 0.3;
@@ -822,6 +911,24 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			}
 		} catch(error) {}
 	}
+	if (resaltarTitulo) {
+		resaltarTitulo = false;
+		ctxMantenimiento.lineWidth = 0;
+        ctxMantenimiento.fillStyle = "red";
+		ctxMantenimiento.globalAlpha = 0.3;
+        ctxMantenimiento.fillRect(0, 0, 200, 15);
+        ctxMantenimiento.stroke();  
+	}
+	titulo = "Mantenimiento: " + countStatus;
+	ctxMantenimiento.beginPath();
+	ctxMantenimiento.lineWidth = 1;
+	ctxMantenimiento.globalAlpha = 1;
+	ctxMantenimiento.fillStyle = "#000000";
+	ctxMantenimiento.font = "700 12px Arial";
+	ctxMantenimiento.textAlign = "center";
+	ctxMantenimiento.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+	ctxMantenimiento.stroke();   
+	ctxMantenimiento.closePath(); 
 
 	// Dibujamos los buses en encierro
 	ctxEncierro.clearRect(0, 0, 200, 600);
@@ -829,14 +936,7 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 	ctxEncierro.strokeStyle = "black";
 	x = 15;
 	y = 40;
-	titulo = "Encierro: " + countEncierro;
-	ctxEncierro.beginPath();
-	ctxEncierro.fillStyle = "#000000";
-	ctxEncierro.font = "700 12px Arial";
-	ctxEncierro.textAlign = "center";
-	ctxEncierro.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
-	ctxEncierro.stroke();   
-	ctxEncierro.closePath(); 
+	titulo = "Encierro: " + countEncierro;	
 	for (i = 0; i < listaEncierro.length; i++) {
 		try {
 			// Color default
@@ -862,12 +962,13 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			ctxEncierro.fillText(listaEncierro[i].nombre.split("").join(String.fromCharCode(8202)), x, y - 12); 
 			ctxEncierro.stroke();   
 			if (listaEncierro[i].buscarEncierro) {
+				resaltarTitulo = true;
 				ctxEncierro.lineWidth = 0;
 				ctxEncierro.fillStyle = "red";
 				ctxEncierro.globalAlpha = 0.3;
 				ctxEncierro.arc(listaEncierro[i].xEncierro, listaEncierro[i].yEncierro, 10, 0, 2 * Math.PI);
 				ctxEncierro.stroke();
-				ctxEncierro.fill();
+				ctxEncierro.fill();							
 				ctxEncierro.lineWidth = 1;
 				ctxEncierro.globalAlpha = 1;
 			}                                      
@@ -880,6 +981,22 @@ function actualizaCamiones(datos, ctxBuses, ctxBloqueos, ctxSinCom, ctxExceso, c
 			}
 		} catch(error) {}
 	}
+	if (resaltarTitulo) {
+		ctxEncierro.lineWidth = 0;
+        ctxEncierro.fillStyle = "red";
+		ctxEncierro.globalAlpha = 0.3;
+        ctxEncierro.fillRect(0, 0, 200, 15);
+        ctxEncierro.stroke();  
+	}
+	ctxEncierro.beginPath();
+	ctxEncierro.lineWidth = 1;
+	ctxEncierro.globalAlpha = 1;
+	ctxEncierro.fillStyle = "#000000";
+	ctxEncierro.font = "700 12px Arial";
+	ctxEncierro.textAlign = "center";
+	ctxEncierro.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+	ctxEncierro.stroke();   
+	ctxEncierro.closePath(); 
 
 	/* //Aqui modificamos los letreros de los camiones superpuestos
 	fueraBox.numeroEnRuta.text = countActivo;
@@ -1058,75 +1175,61 @@ function repintaTodo() {
 }
 
 
-function zoomIn(x, y) {
-	sx = sx * 1.2;
-	sy = sy * 1.2;
-	
-	if (sx < 0.25) {
-		sx = 0.25;
-		sy = 0.25;
-	}	
-	var centro = {
-		x: 0,
-		y: 0
-	}	
-	var newCentro = {
-		x: x * sx,
-		y: y * sy
+function zoomIn(x, y) {	
+	var x1 = ((x - pInicio) * 0.77) * sx;
+	var y1 = (y * 0.77) * sy;
+	if (sx < 1) {
+		sx = 1;
+		sy = 1;
+	} else {
+		sx = sx + 1;
+		sy = sy + 1;
 	}
+	var x2 = ((x - pInicio) * 0.77) * sx;
+	var y2 = (y * 0.77) * sy;
 
-	if (min.x != 0 && min.y != 0 && max.x != 0 && max.y != 0) {
-		centro.x = ((max.x - min.x) / 2) * sx;
-		centro.y = ((max.y - min.y) / 2) * sy;
-		if (newCentro.x < centro.x) {
-			avanceX = pInicio + avanceX - (centro.x - newCentro.x);
-		} else {
-			if (newCentro.x > centro.x) {
-				avanceX = avanceX + (newCentro.x - centro.x);
-			} 
-		}
-		if (newCentro.y < centro.y) {
-			avanceY = avanceY - (centro.y - newCentro.y);
-		} else {
-			if (newCentro.y > centro.y) {
-				avanceY = avanceY + (newCentro.y - centro.y);
-			} 
-		}
+	if (sx == 1) {
+		centro.x = canvas.width / 2;
+		centro.y = canvas.height / 2;
+		var resta1 = document.body.clientWidth - (max.x - min.x) - 50;
+		avanceX = (resta1 / 2) / 2;
+		avanceY = 80;
+	} else {
+		avanceX = avanceX - (x2 - x1);
+		avanceY = avanceY - (y2 - y1);
+		
+		centro.x = x;
+		centro.y = y;
 	}
-	
+			
 	repintaTodo();
 }
 
 function zoomOut(x, y) {
-	sx = sx * 0.8;
-	sy = sy * 0.8;	
+	var x1 = ((x - pInicio) * 0.77) * sx;
+	var y1 = (y * 0.77) * sy;
+	sx = sx - 1;
+	sy = sy - 1;	
 
-	var centro = {
-		x: 0,
-		y: 0
-	}	
-	var newCentro = {
-		x: x * sx,
-		y: y * sy
-	}
+	if (sx == 1) {
+		centro.x = canvas.width / 2;
+		centro.y = canvas.height / 2;
+		var resta1 = document.body.clientWidth - (max.x - min.x) - 50;
+		avanceX = (resta1 / 2) / 2;
+		avanceY = 80;
+	} else {
+		if (sx < 0.5) {
+			sx = 0.5;
+			sy = 0.5;
+		}	
+		var x2 = ((x - pInicio) * 0.77) * sx;
+		var y2 = (y * 0.77) * sy;
 
-	if (min.x != 0 && min.y != 0 && max.x != 0 && max.y != 0) {
-		centro.x = ((max.x - min.x) / 2) * sx;
-		centro.y = ((max.y - min.y) / 2) * sy;
-		if (newCentro.x < centro.x) {
-			avanceX = pInicio + avanceX - (centro.x - newCentro.x);
-		} else {
-			if (newCentro.x > centro.x) {
-				avanceX = avanceX + (newCentro.x - centro.x);
-			} 
-		}
-		if (newCentro.y < centro.y) {
-			avanceY = avanceY - (centro.y - newCentro.y);
-		} else {
-			if (newCentro.y > centro.y) {
-				avanceY = avanceY + (newCentro.y - centro.y);
-			} 
-		}
+		avanceX = avanceX + (x1 - x2);
+		avanceY = avanceY + (y1 - y2);
+		
+		centro.x = x;
+		centro.y = y;
 	}
 	
 	repintaTodo();
@@ -1135,6 +1238,8 @@ function zoomOut(x, y) {
 function oneToOne() {
 	sx = 1;
 	sy = 1;
+	centro.x = canvas.width / 2;
+	centro.y = canvas.height / 2;
 	var resta1 = document.body.clientWidth - (max.x - min.x) - 50;
 	avanceX = (resta1 / 2) / 2;
 	avanceY = 80;

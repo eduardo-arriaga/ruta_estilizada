@@ -63,11 +63,13 @@
 ?>
 <!DOCTYPE html>
 <html>
-  <head>
+  <head>    
+    <meta charset="utf-8">
+    <title>Ruta Estilizada</title>
+    <link rel="icon" href="descarga.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">    
-   <link href="index.css" rel="stylesheet" type="text/css">
-    <meta charset="ISO-8859-1">  
+    <link href="index.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-3.5.1.min.js"></script> 
     <script src="graph.js"></script>
     <script src="nodo.js"></script>
@@ -99,7 +101,7 @@
       </div>
       <div  class="d-flex justify-content-center">
         <div class="row">
-          <a id="inicio" href="http://www.miruta.com.mx" class="btn btn-info" role="button" style="position:absolute; top:10px; left:800px; background-color: orange;">Inicio</a>
+          <a id="inicio" href="http://monitoreatubus.com" class="btn btn-info" role="button" style="position:absolute; top:10px; left:800px; background-color: orange;">Inicio</a>
           <div class="col-sm text-md-right">
             <label for="grupos">Grupo:</label>
           </div>
@@ -136,7 +138,8 @@
                   <button class="btn btn-light" id="zoomin" style="margin-top:5px;"><i class="fa fa-search-plus"></i></button>  
                   <button  class="btn btn-light" id="zoomount" style="margin-top:5px;"><i class="fa  fa-search-minus"></i></button>  
                   <button  class="btn btn-light" id="regresar" style="margin-top:5px;">1:1</button>  
-                  <button class="btn btn-light" id="puntero" style="margin-top:5px;"><i class=" fa fa-mouse-pointer"></i></button>  
+                  <button class="btn btn-light" id="puntero" style="margin-top:5px;"><i class="fa fa-mouse-pointer"></i></button>
+                  <button class="btn btn-light" id="hide" style="margin-top:5px;"><i id="eye" class="fa fa-eye-slash"></i></button>
                   <button  class="btn btn-light" id="expandir" style="margin-top:5px; margin-left: 500px;"><i class="fa fa-expand"></i></button>             
             </div>
      </div>
@@ -144,10 +147,10 @@
     </header>
     <section>
       <div  class="d-flex justify-content-center" id='expande'>
-            <div  id='canvas1' style="position:absolute; top:150px; left:10px; width:100%;" >
+            <div  id='canvas1' style="position:absolute; top:70px; left:10px; width:100%;" >
               <canvas  id="linea1"  class="d-flex justify-content-center" width="100%" height="800">Navegador no soporta canvas :( </canvas>
             </div>
-            <div  id='canvas2' style="position:absolute; top:150px; left:10px; width:100%;">
+            <div  id='canvas2' style="position:absolute; top:70px; left:10px; width:100%;">
               <canvas id="linea2"  class="d-flex justify-content-center" width="100%" height="800">Navegador no soporta canvas :( </canvas>
             </div>
             <div id="iDatosBus" class = "info" style="position:absolute; top:0px; left:0px; display: none;"> 
@@ -199,7 +202,7 @@
         </div>
       </div>    
       <div class="p-1 mb-0 bg-primary text-white">   
-        <div class="footer-copyright text-center py-1">  COPYRIGHT  SISTEMA BEA V1.3 | DESARROLLO DE SOFTWARE |  |   
+        <div class="footer-copyright text-center py-1">  COPYRIGHT  SISTEMA BEA V2.0 | DESARROLLO DE SOFTWARE |  |   
         </div>
       </div>
     </footer>

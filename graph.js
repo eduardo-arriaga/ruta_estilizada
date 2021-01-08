@@ -119,8 +119,8 @@ class Graph
                 if (!u.marked)
                 {
                     u.marked = true;
-                    que[int(queSize++)] = u;
-                    
+                    que[queSize] = u;
+                    queSize++;
                     c++;
                 }
             }
@@ -158,8 +158,8 @@ class Graph
                 {
                     u.marked = true;
                     u.traverseCount = traverseCount;
-                    que[int(queSize++)] = u;
-                    
+                    que[queSize] = u;
+                    queSize++;
                     c++;
                 }
             }

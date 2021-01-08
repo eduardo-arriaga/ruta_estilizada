@@ -118,17 +118,17 @@ class Vehiculo {
             // Revisamos el dato de la fecha/hora para saber si se le aplica el offset
             //console.log('rtc:' + this.banderaRTC);
             if (this.banderaRTC === 0) {
-                this.fecha = new Date(ano, mes, dia, hora, minuto, segundo);
+                this.fecha = new Date(ano, mes - 1, dia, hora, minuto, segundo);
                 this.fecha = this.convertUTCDateToLocalDate(this.fecha);
                 // Revisamos si está en horario de verano
                 if (this.isDstSwitchDates() && this.isDST(this.fecha)) {                
                     this.fecha.setHours(this.fecha.getHours() + 1);
                 } 
             } else {
-                this.fecha = new Date(ano, mes, dia, hora, minuto, segundo);
+                this.fecha = new Date(ano, mes - 1, dia, hora, minuto, segundo);
             }
-            // Separamos la fecha y la hora para mostrar como datos del autobús
-            this.fechaText = this.pad2(this.fecha.getDate()) + "/" + this.pad2(this.fecha.getMonth()) + "/" + this.fecha.getFullYear();
+            // Separamos la fecha y la hora para mostrar como datos del autobús            
+            this.fechaText = this.pad2(this.fecha.getDate()) + "/" + this.pad2(this.fecha.getMonth() + 1) + "/" + this.fecha.getFullYear();
             this.horaText = this.pad2(this.fecha.getHours()) + ":" + this.pad2(this.fecha.getMinutes()) + ":" + this.pad2(this.fecha.getSeconds());
         } else {
             this.fecha = vehiculo["fecha"];
@@ -153,7 +153,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
+                 "Fecha: " + this.fechaText + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -175,7 +175,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
+                 "Fecha: " + this.fechaText + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -196,7 +196,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
+                 "Fecha: " + this.fechaText + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -217,7 +217,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
+                 "Fecha: " + this.fechaText + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -238,7 +238,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
+                 "Fecha: " + this.fechaText + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -259,7 +259,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
+                 "Fecha: " + this.fechaText + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -280,7 +280,7 @@ class Vehiculo {
         iDiv.style.display = "block";
         var cadena = "Unidad: " + this.nombre + "\n" + 
                  "Velocidad: " + this.velocidad + " km/h\n" +
-                 "Fecha: " + this.fechaText.replace('/00/', '/12/') + "\n" + 
+                 "Fecha: " + this.fechaText + "\n" + 
                  "Hora: " + this.horaText + "\n" + 
                  "Acumulado: " + this.acumulado + "\n" +
                  "Credenciales: " + this.credenciales + 
@@ -508,16 +508,16 @@ class Vehiculo {
             segundo = parseInt(camion['fecha'].substring(17,19));
             // Revisamos el dato de la fecha/hora para saber si se le aplica el offset
             if (this.banderaRTC === 0) {
-                this.fecha = this.convertUTCDateToLocalDate(new Date(ano, mes, dia, hora, minuto, segundo));
+                this.fecha = this.convertUTCDateToLocalDate(new Date(ano, mes - 1, dia, hora, minuto, segundo));
                 // Revisamos si está en horario de verano
                 if (this.isDstSwitchDates() && this.isDST(this.fecha)) {                
                     this.fecha.setHours(this.fecha.getHours() + 1);
                 } 
             } else {
-                this.fecha = new Date(ano, mes, dia, hora, minuto, segundo);
+                this.fecha = new Date(ano, mes - 1, dia, hora, minuto, segundo);
             }
             // Separamos la fecha y la hora para mostrar como datos del autobús
-            this.fechaText = this.pad2(this.fecha.getDate()) + "/" + this.pad2(this.fecha.getMonth()) + "/" + this.fecha.getFullYear();
+            this.fechaText = this.pad2(this.fecha.getDate()) + "/" + this.pad2(this.fecha.getMonth() + 1) + "/" + this.fecha.getFullYear();
             this.horaText = this.pad2(this.fecha.getHours()) + ":" + this.pad2(this.fecha.getMinutes()) + ":" + this.pad2(this.fecha.getSeconds());
         } else {
             this.fecha = camion.fecha;
@@ -526,8 +526,8 @@ class Vehiculo {
             dia = this.fecha.getDate();
             hora = this.fecha.getHours();
             minuto = this.fecha.getMinutes();
-            segundo = this.fecha.getSeconds();            
-            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes) + "/" + ano;
+            segundo = this.fecha.getSeconds();       
+            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes + 1) + "/" + ano;
             this.horaText = this.pad2(hora) + ":" + this.pad2(minuto) + ":" + this.pad2(segundo);
         }
         this.nombre = camion['nombre'];
@@ -569,15 +569,15 @@ class Vehiculo {
             segundo = parseInt(fecha.substring(17,19));            
             // Revisamos el dato de la fecha/hora para saber si se le aplica el offset
             if (this.banderaRTC === 0) {
-                this.fecha = this.convertUTCDateToLocalDate(new Date(ano, mes, dia, hora, minuto, segundo));
+                this.fecha = this.convertUTCDateToLocalDate(new Date(ano, mes - 1, dia, hora, minuto, segundo));
                 // Revisamos si está en horario de verano
                 if (this.isDstSwitchDates() && this.isDST(this.fecha)) {                
                     this.fecha.setHours(this.fecha.getHours() + 1);
                 } 
             } else {
-                this.fecha = new Date(ano, mes, dia, hora, minuto, segundo);
+                this.fecha = new Date(ano, mes - 1, dia, hora, minuto, segundo);
             }
-            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes) + "/" + ano;
+            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes + 1) + "/" + ano;
             this.horaText = this.pad2(hora) + ":" + this.pad2(minuto) + ":" + this.pad2(segundo);
         } else {
             ano = fecha.getFullYear();
@@ -587,7 +587,7 @@ class Vehiculo {
             minuto = fecha.getMinutes();
             segundo = fecha.getSeconds();
             this.fecha = fecha;
-            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes) + "/" + ano;
+            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes + 1) + "/" + ano;
             this.horaText = this.pad2(hora) + ":" + this.pad2(minuto) + ":" + this.pad2(segundo);
         }        
         this.nombre = nombre;
@@ -678,15 +678,15 @@ class Vehiculo {
             segundo = parseInt(fecha.substring(17,19));
             // Revisamos el dato de la fecha/hora para saber si se le aplica el offset
             if (this.banderaRTC === 0) {
-                this.fecha = this.convertUTCDateToLocalDate(new Date(ano, mes, dia, hora, minuto, segundo));
+                this.fecha = this.convertUTCDateToLocalDate(new Date(ano, mes - 1, dia, hora, minuto, segundo));
                 // Revisamos si está en horario de verano
                 if (this.isDstSwitchDates() && this.isDST(this.fecha)) {                
                     this.fecha.setHours(this.fecha.getHours() + 1);
                 } 
             } else {
-                this.fecha = new Date(ano, mes, dia, hora, minuto, segundo);
+                this.fecha = new Date(ano, mes - 1, dia, hora, minuto, segundo);
             }
-            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes) + "/" + ano;
+            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes + 1) + "/" + ano;
             this.horaText = this.pad2(hora) + ":" + this.pad2(minuto) + ":" + this.pad2(segundo);
         } else {
             ano = fecha.getFullYear();
@@ -696,7 +696,7 @@ class Vehiculo {
             minuto = fecha.getMinutes();
             segundo = fecha.getSeconds();
             this.fecha = fecha;
-            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes) + "/" + ano;
+            this.fechaText = this.pad2(dia) + "/" + this.pad2(mes + 1) + "/" + ano;
             this.horaText = this.pad2(hora) + ":" + this.pad2(minuto) + ":" + this.pad2(segundo);
         }
         var tempFecha = new Date();
@@ -790,13 +790,19 @@ class Vehiculo {
         this.nodoActual = nodoActual;			
     }
 
+    // convertUTCDateToLocalDate(date) {
+    //     var newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+    
+    //     var offset = date.getTimezoneOffset() / 60;
+    //     var hours = date.getHours();
+    
+    //     newDate.setHours(hours - offset);
+    //     return newDate;   
+    // }
+
     convertUTCDateToLocalDate(date) {
-        var newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
-    
-        var offset = date.getTimezoneOffset() / 60;
-        var hours = date.getHours();
-    
-        newDate.setHours(hours - offset);
+        var newDate = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000);
+        
         return newDate;   
     }
 

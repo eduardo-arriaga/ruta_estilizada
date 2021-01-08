@@ -35,7 +35,7 @@ var ctxMantenimiento = null;
 var ctxEstatus = null;
 var ctxEncierro = null;
 var pInicio = 8;
-var avanceX = 0;
+var avanceX = 50;
 var avanceY = 0;
 var divCanvas = null;
 var divCanvasBuses = null;
@@ -59,6 +59,11 @@ var mouse = {
   drag: false
 };
 
+var centro = {
+  x: 0,
+  y: 0
+}
+
 const resize = () => {     
   var btn = document.getElementById("expandir");  
   var btnInicio = document.getElementById("inicio");  
@@ -68,13 +73,22 @@ const resize = () => {
   c2.width = document.body.clientWidth;  
   
   if (document.body.clientWidth > 650) {
-    btn.style.marginLeft = document.body.clientWidth - btn.getBoundingClientRect().width - 600 + 'px';    
+    btn.style.marginLeft = document.body.clientWidth - btn.getBoundingClientRect().width - 660 + 'px';    
     btnInicio.style.left = document.body.clientWidth - 50 + 'px';
   }
   if (nodos != null && nodos.getListaNodos().length > 0) {
+    if (sx > 1.5) {
+      if (document.fullscreenElement) {
+        sx = 1.25;
+        sy = 1.25;
+      } else {
+        sx = 1;
+        sy = 1;
+      }
+    }
     var resta1 = document.body.clientWidth - (max.x - min.x) - 50;
     avanceX = (resta1 / 2) / 2;
-    avanceY = 80;
+    avanceY = 50;
     repintaTodo();
   }
 }
@@ -644,11 +658,11 @@ function onMouseMoveEncierro(event) {
 document.addEventListener('fullscreenchange', (event) => {
   if (document.fullscreenElement) {
     //console.log(`Element: ${document.fullscreenElement.id} entered full-screen mode.`);
-    document.getElementById('oculta').style.display = 'none';
-  
+    document.getElementById('oculta').style.display = 'none';    
   } else {
     //console.log('Leaving full-screen mode.');
     document.getElementById('oculta').style.display = 'block';
+    $("#mostrar").trigger("click");
   }
 });
 
@@ -752,147 +766,285 @@ $(document).ready(function()
     var encontrado = false;
     if (datosBuses != null) { 
       var i = 0;
+      var countRuta = 0;
       for (i = 0; i < vehiculos.listaVehiculos.length; i++) {
         try {
+          if (vehiculos.listaVehiculos[i].visible) {
+            countRuta++;
+          }
           if (vehiculos.listaVehiculos[i].visible && vehiculos.listaVehiculos[i].nombre == $("#txtBuscar").val()) {
             encontrado = true;
-            vehiculos.listaVehiculos[i].buscar = true;
-            ctxBuses.beginPath();
-            ctxBuses.lineWidth = 0;
-            ctxBuses.fillStyle = "red";
-            ctxBuses.globalAlpha = 0.3;
-            ctxBuses.arc((vehiculos.listaVehiculos[i].x * sx) + vehiculos.listaVehiculos[i].pInicio + avanceX, (vehiculos.listaVehiculos[i].y * sy) + avanceY, 10, 0, 2 * Math.PI);
-            ctxBuses.stroke();
-            ctxBuses.fill();
-            ctxBuses.closePath();
-            ctxBuses.lineWidth = 1;
-            ctxBuses.globalAlpha = 1;
+            if (!vehiculos.listaVehiculos[i].buscar) {
+              vehiculos.listaVehiculos[i].buscar = true;
+              ctxBuses.beginPath();
+              ctxBuses.lineWidth = 0;
+              ctxBuses.fillStyle = "red";
+              ctxBuses.globalAlpha = 0.3;
+              ctxBuses.arc((vehiculos.listaVehiculos[i].x * sx) + vehiculos.listaVehiculos[i].pInicio + avanceX, (vehiculos.listaVehiculos[i].y * sy) + avanceY, 10, 0, 2 * Math.PI);
+              ctxBuses.stroke();
+              ctxBuses.fill();
+              ctxBuses.closePath();                
+              ctxBuses.lineWidth = 1;
+              ctxBuses.globalAlpha = 1;
+            }
           } else {
             vehiculos.listaVehiculos[i].buscar = false;
           }
         } catch(error) {}
       }  
+      var resaltarTitulo = false;
       for (i = 0; i < listaBloqueos.length; i++) {
         try {
           if (listaBloqueos[i].nombre == $("#txtBuscar").val()) {
             encontrado = true;
-            listaBloqueos[i].buscarBloqueos = true;
-            ctxBloqueos.beginPath();
-            ctxBloqueos.lineWidth = 0;
-            ctxBloqueos.fillStyle = "red";
-            ctxBloqueos.globalAlpha = 0.3;
-            ctxBloqueos.arc( listaBloqueos[i].xBloqueo,  listaBloqueos[i].yBloqueo, 10, 0, 2 * Math.PI);
-            ctxBloqueos.stroke();
-            ctxBloqueos.fill();
-            ctxBloqueos.closePath();
-            ctxBloqueos.lineWidth = 1;
-            ctxBloqueos.globalAlpha = 1;
+            resaltarTitulo = true;
+            if (!listaBloqueos[i].buscarBloqueos) {
+              listaBloqueos[i].buscarBloqueos = true;
+              ctxBloqueos.beginPath();
+              ctxBloqueos.lineWidth = 0;
+              ctxBloqueos.fillStyle = "red";
+              ctxBloqueos.globalAlpha = 0.3;
+              ctxBloqueos.arc( listaBloqueos[i].xBloqueo,  listaBloqueos[i].yBloqueo, 10, 0, 2 * Math.PI);
+              ctxBloqueos.stroke();
+              ctxBloqueos.fill();
+              ctxBloqueos.closePath();
+              ctxBloqueos.lineWidth = 1;
+              ctxBloqueos.globalAlpha = 1;
+            }
           } else {
             listaBloqueos[i].buscarBloqueos = false;
           }
         } catch(error) {}
       }    
+      var titulo = "Bloqueos: " + listaBloqueos.length.toString();
+      ctxBloqueos.beginPath();
+      ctxBloqueos.clearRect(0, 0, 200, 15);
+      if (resaltarTitulo) {
+        resaltarTitulo = false;
+        ctxBloqueos.lineWidth = 0;
+        ctxBloqueos.fillStyle = "red";
+				ctxBloqueos.globalAlpha = 0.3;        
+        ctxBloqueos.fillRect(0, 0, 200, 15);
+        ctxBloqueos.stroke();        
+      }      
+      ctxBloqueos.lineWidth = 1;
+      ctxBloqueos.globalAlpha = 1;
+      ctxBloqueos.fillStyle = "#000000";
+      ctxBloqueos.font = "700 12px Arial";
+      ctxBloqueos.textAlign = "center";
+      ctxBloqueos.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+      ctxBloqueos.stroke();   
+      ctxBloqueos.closePath();
       for (i = 0; i < listaSinCom.length; i++) {
         try {
           if (listaSinCom[i].nombre == $("#txtBuscar").val()) {
             encontrado = true;
-            listaSinCom[i].buscarSinCom = true;
-            ctxSinCom.beginPath();
-            ctxSinCom.lineWidth = 0;
-            ctxSinCom.fillStyle = "red";
-            ctxSinCom.globalAlpha = 0.3;
-            ctxSinCom.arc( listaSinCom[i].xSinCom,  listaSinCom[i].ySinCom, 10, 0, 2 * Math.PI);
-            ctxSinCom.stroke();
-            ctxSinCom.fill();
-            ctxSinCom.closePath();
-            ctxSinCom.lineWidth = 1;
-            ctxSinCom.globalAlpha = 1;
+            resaltarTitulo = true;
+            if (!listaSinCom[i].buscarSinCom) {
+              listaSinCom[i].buscarSinCom = true;
+              ctxSinCom.beginPath();
+              ctxSinCom.lineWidth = 0;
+              ctxSinCom.fillStyle = "red";
+              ctxSinCom.globalAlpha = 0.3;
+              ctxSinCom.arc( listaSinCom[i].xSinCom,  listaSinCom[i].ySinCom, 10, 0, 2 * Math.PI);
+              ctxSinCom.stroke();
+              ctxSinCom.fill();
+              ctxSinCom.closePath();
+              ctxSinCom.lineWidth = 1;
+              ctxSinCom.globalAlpha = 1;
+            }
           } else {
             listaSinCom[i].buscarSinCom = false;
           }
         } catch(error) {}
       }  
+      titulo = "Sin Com: " + listaSinCom.length.toString() + "     Con Com: " + (vehiculos.listaVehiculos.length - listaSinCom.length);
+      ctxSinCom.beginPath();
+      ctxSinCom.clearRect(0, 0, 200, 15);
+      if (resaltarTitulo) {
+        resaltarTitulo = false;
+        ctxSinCom.lineWidth = 0;
+        ctxSinCom.fillStyle = "red";
+				ctxSinCom.globalAlpha = 0.3;        
+        ctxSinCom.fillRect(0, 0, 200, 15);
+        ctxSinCom.stroke();        
+      }      
+      ctxSinCom.lineWidth = 1;
+      ctxSinCom.globalAlpha = 1;
+      ctxSinCom.fillStyle = "#000000";
+      ctxSinCom.font = "700 12px Arial";
+      ctxSinCom.textAlign = "center";
+      ctxSinCom.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+      ctxSinCom.stroke();   
+      ctxSinCom.closePath();
       for (i = 0; i < listaExceso.length; i++) {
         try {
           if (listaExceso[i].nombre == $("#txtBuscar").val()) {
             encontrado = true;
-            listaExceso[i].buscarExceso = true;
-            ctxExceso.beginPath();
-            ctxExceso.lineWidth = 0;
-            ctxExceso.fillStyle = "red";
-            ctxExceso.globalAlpha = 0.3;
-            ctxExceso.arc( listaExceso[i].xExceso,  listaExceso[i].yExceso, 10, 0, 2 * Math.PI);
-            ctxExceso.stroke();
-            ctxExceso.fill();
-            ctxExceso.closePath();
-            ctxExceso.lineWidth = 1;
-            ctxExceso.globalAlpha = 1;
+            resaltarTitulo = true;
+            if (!listaExceso[i].buscarExceso) {
+              listaExceso[i].buscarExceso = true;
+              ctxExceso.beginPath();
+              ctxExceso.lineWidth = 0;
+              ctxExceso.fillStyle = "red";
+              ctxExceso.globalAlpha = 0.3;
+              ctxExceso.arc( listaExceso[i].xExceso,  listaExceso[i].yExceso, 10, 0, 2 * Math.PI);
+              ctxExceso.stroke();
+              ctxExceso.fill();
+              ctxExceso.closePath();
+              ctxExceso.lineWidth = 1;
+              ctxExceso.globalAlpha = 1;
+            }
           } else {
             listaExceso[i].buscarExceso = false;
           }
         } catch(error) {}
       } 
+      titulo = "Exceso de Velocidad: " + listaExceso.length.toString();
+      ctxExceso.beginPath();
+      ctxExceso.clearRect(0, 0, 200, 15);
+      if (resaltarTitulo) {
+        resaltarTitulo = false;
+        ctxExceso.lineWidth = 0;
+        ctxExceso.fillStyle = "red";
+				ctxExceso.globalAlpha = 0.3;        
+        ctxExceso.fillRect(0, 0, 200, 15);
+        ctxExceso.stroke();        
+      }      
+      ctxExceso.lineWidth = 1;
+      ctxExceso.globalAlpha = 1;
+      ctxExceso.fillStyle = "#000000";
+      ctxExceso.font = "700 12px Arial";
+      ctxExceso.textAlign = "center";
+      ctxExceso.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+      ctxExceso.stroke();   
+      ctxExceso.closePath(); 
       for (i = 0; i < listaFueraRuta.length; i++) {
         try {
           if (listaFueraRuta[i].nombre == $("#txtBuscar").val()) {
             encontrado = true;
+            resaltarTitulo = true;
             //console.log(listaFueraRuta[i]);
-            listaFueraRuta[i].buscarFueraRuta = true;
-            ctxFueraRuta.beginPath();
-            ctxFueraRuta.lineWidth = 0;
-            ctxFueraRuta.fillStyle = "red";
-            ctxFueraRuta.globalAlpha = 0.3;
-            ctxFueraRuta.arc( listaFueraRuta[i].xFuera,  listaFueraRuta[i].yFuera, 10, 0, 2 * Math.PI);
-            ctxFueraRuta.stroke();
-            ctxFueraRuta.fill();
-            ctxFueraRuta.closePath();
-            ctxFueraRuta.lineWidth = 1;
-            ctxFueraRuta.globalAlpha = 1;
+            if (!listaFueraRuta[i].buscarFueraRuta) {
+              listaFueraRuta[i].buscarFueraRuta = true;
+              ctxFueraRuta.beginPath();
+              ctxFueraRuta.lineWidth = 0;
+              ctxFueraRuta.fillStyle = "red";
+              ctxFueraRuta.globalAlpha = 0.3;
+              ctxFueraRuta.arc( listaFueraRuta[i].xFuera,  listaFueraRuta[i].yFuera, 10, 0, 2 * Math.PI);
+              ctxFueraRuta.stroke();
+              ctxFueraRuta.fill();
+              ctxFueraRuta.closePath();
+              ctxFueraRuta.lineWidth = 1;
+              ctxFueraRuta.globalAlpha = 1;
+            }
           } else {
             listaFueraRuta[i].buscarFueraRuta = false;
           }
         } catch(error) {}
       } 
+      titulo = "Fuera de Ruta: " + listaFueraRuta.length.toString() + " En Ruta: " + countRuta;
+      ctxFueraRuta.beginPath();
+      ctxFueraRuta.clearRect(0, 0, 200, 15);
+      if (resaltarTitulo) {
+        resaltarTitulo = false;
+        ctxFueraRuta.lineWidth = 0;
+        ctxFueraRuta.fillStyle = "red";
+				ctxFueraRuta.globalAlpha = 0.3;        
+        ctxFueraRuta.fillRect(0, 0, 200, 15);
+        ctxFueraRuta.stroke();        
+      }      
+      ctxFueraRuta.lineWidth = 1;
+      ctxFueraRuta.globalAlpha = 1;
+      ctxFueraRuta.fillStyle = "#000000";
+      ctxFueraRuta.font = "700 12px Arial";
+      ctxFueraRuta.textAlign = "center";
+      ctxFueraRuta.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+      ctxFueraRuta.stroke();   
+      ctxFueraRuta.closePath(); 
       for (i = 0; i < listaMantenimiento.length; i++) {
         try {
           if (listaMantenimiento[i].nombre == $("#txtBuscar").val()) {
             encontrado = true;
-            listaFueraRuta[i].buscarMantenimiento = true;
-            ctxMantenimiento.beginPath();
-            ctxMantenimiento.lineWidth = 0;
-            ctxMantenimiento.fillStyle = "red";
-            ctxMantenimiento.globalAlpha = 0.3;
-            ctxMantenimiento.arc( listaMantenimiento[i].xMantenimiento,  listaMantenimiento[i].yMantenimiento, 10, 0, 2 * Math.PI);
-            ctxMantenimiento.stroke();
-            ctxMantenimiento.fill();
-            ctxMantenimiento.closePath();
-            ctxMantenimiento.lineWidth = 1;
-            ctxMantenimiento.globalAlpha = 1;
+            resaltarTitulo = true;
+            if (!listaFueraRuta[i].buscarMantenimiento) {
+              listaMantenimiento[i].buscarMantenimiento = true;
+              ctxMantenimiento.beginPath();
+              ctxMantenimiento.lineWidth = 0;
+              ctxMantenimiento.fillStyle = "red";
+              ctxMantenimiento.globalAlpha = 0.3;
+              ctxMantenimiento.arc( listaMantenimiento[i].xMantenimiento,  listaMantenimiento[i].yMantenimiento, 10, 0, 2 * Math.PI);
+              ctxMantenimiento.stroke();
+              ctxMantenimiento.fill();
+              ctxMantenimiento.closePath();
+              ctxMantenimiento.lineWidth = 1;
+              ctxMantenimiento.globalAlpha = 1;
+            }
           } else {
             listaMantenimiento[i].buscarMantenimiento = false;
           }
         } catch(error) {}
       } 
+      titulo = "Mantenimiento: " + listaMantenimiento.length.toString();
+      ctxMantenimiento.beginPath();
+      ctxMantenimiento.clearRect(0, 0, 200, 15);
+      if (resaltarTitulo) {
+        resaltarTitulo = false;
+        ctxMantenimiento.lineWidth = 0;
+        ctxMantenimiento.fillStyle = "red";
+				ctxMantenimiento.globalAlpha = 0.3;        
+        ctxMantenimiento.fillRect(0, 0, 200, 15);
+        ctxMantenimiento.stroke();        
+      }      
+      ctxMantenimiento.lineWidth = 1;
+      ctxMantenimiento.globalAlpha = 1;
+      ctxMantenimiento.fillStyle = "#000000";
+      ctxMantenimiento.font = "700 12px Arial";
+      ctxMantenimiento.textAlign = "center";
+      ctxMantenimiento.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+      ctxMantenimiento.stroke();   
+      ctxMantenimiento.closePath(); 
       for (i = 0; i < listaEncierro.length; i++) {
         try {
           if (listaEncierro[i].nombre == $("#txtBuscar").val()) {
             encontrado = true;
-            listaEncierro[i].buscarEncierro = true;
-            ctxEncierro.beginPath();
-            ctxEncierro.lineWidth = 0;
-            ctxEncierro.fillStyle = "red";
-            ctxEncierro.globalAlpha = 0.3;
-            ctxEncierro.arc( listaEncierro[i].xEncierro,  listaEncierro[i].yEncierro, 10, 0, 2 * Math.PI);
-            ctxEncierro.stroke();
-            ctxEncierro.fill();
-            ctxEncierro.closePath();
-            ctxEncierro.lineWidth = 1;
-            ctxEncierro.globalAlpha = 1;
+            resaltarTitulo = true;
+            if (!listaEncierro[i].buscarEncierro) {
+              listaEncierro[i].buscarEncierro = true;
+              ctxEncierro.beginPath();
+              ctxEncierro.lineWidth = 0;
+              ctxEncierro.fillStyle = "red";
+              ctxEncierro.globalAlpha = 0.3;
+              ctxEncierro.arc( listaEncierro[i].xEncierro,  listaEncierro[i].yEncierro, 10, 0, 2 * Math.PI);
+              ctxEncierro.stroke();
+              ctxEncierro.fill();
+              ctxEncierro.closePath();
+              ctxEncierro.lineWidth = 1;
+              ctxEncierro.globalAlpha = 1;
+            }
           } else {
             listaEncierro[i].buscarEncierro = false;
           }
         } catch(error) {}
       } 
+      titulo = "Encierro: " + listaEncierro.length.toString();
+      ctxEncierro.beginPath();
+      ctxEncierro.clearRect(0, 0, 200, 15);
+      if (resaltarTitulo) {
+        ctxEncierro.lineWidth = 0;
+        ctxEncierro.fillStyle = "red";
+				ctxEncierro.globalAlpha = 0.3;        
+        ctxEncierro.fillRect(0, 0, 200, 15);
+        ctxEncierro.stroke();        
+      }      
+      ctxEncierro.lineWidth = 1;
+      ctxEncierro.globalAlpha = 1;
+      ctxEncierro.fillStyle = "#000000";
+      ctxEncierro.font = "700 12px Arial";
+      ctxEncierro.textAlign = "center";
+      ctxEncierro.fillText(titulo.split("").join(String.fromCharCode(8202)), 100, 12); 
+      ctxEncierro.stroke();   
+      ctxEncierro.closePath(); 
     }
     if (!encontrado) {
       $("#txtBuscar").val("No se encontró");
@@ -958,6 +1110,8 @@ $(document).ready(function()
   }); 
 
   $('#expandir').click(function() {
+    sx = 1.25;
+    sy = 1.25;
     var elem = document.documentElement;
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
@@ -965,7 +1119,7 @@ $(document).ready(function()
       elem.webkitRequestFullscreen();
     } else if (elem.msRequestFullscreen) { /* IE11 */
       elem.msRequestFullscreen();    
-    }    
+    }  
   });       
   
 
@@ -985,9 +1139,22 @@ $(document).ready(function()
 
   $('#regresar').click(function() {
     oneToOne();
+    $("#puntero").trigger("click");
   }); 
 
-  $('#mostrar').click(function() {
+  $('#hide').click(function() {
+    if ($("#eye").hasClass("fa-eye-slash")) {
+      $("#eye").removeClass("fa-eye-slash");
+      $("#eye").addClass("fa-eye");
+      document.getElementById("foo").style.display="none";
+    } else {
+      $("#eye").removeClass("fa-eye");
+      $("#eye").addClass("fa-eye-slash");
+      document.getElementById("foo").style.display="block";
+    }    
+  });
+
+  $('#mostrar').click(function() {    
     sx = 1;
 	  sy = 1;
 	  avanceX = 0;
@@ -1037,6 +1204,8 @@ $(document).ready(function()
             ctxBuses.scale(1.3, 1.3);           
             ctx.clearRect(0, 0, canvas.width, canvas.height);  
             ctxBuses.clearRect(0, 0, canvasBuses.width, canvasBuses.height);  
+            centro.x = canvas.width / 2;
+            centro.y = canvas.height / 2;            
             var i = 0;
             if (interval != null)
               clearInterval(interval);
